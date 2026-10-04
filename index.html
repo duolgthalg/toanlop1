@@ -429,7 +429,7 @@ function dangKiemTra(){
    ========================================================= */
 const KHOA_LUU = "beHocToanLop1_v1";
 let luuDuoc = true;
-const caiDatMoi = () => ({ amThanh: true, tuDoc: true, giong: "", tocDo: 0.9 });
+const caiDatMoi = () => ({ amThanh: true, tuDoc: true, giong: "", tocDo: 0.9, phatAm: [] });
 const dbMoi = () => ({ phienBan: 2, hoSo: {}, dangChon: null, caiDat: caiDatMoi() });
 
 function chuanHoa(p){
@@ -526,11 +526,21 @@ function giongViet(){
 function noi(text, xong){
   const g = giongViet(); if (!g) return false;
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
+  const u = new SpeechSynthesisUtterance(chuanBiDoc(text));
   u.voice = g; u.lang = g.lang; u.rate = DB.caiDat.tocDo || 0.9;
   if (xong){ u.onend = xong; u.onerror = xong; }
   speechSynthesis.speak(u);
   return true;
+}
+// Sửa cách đọc: chuẩn hóa chữ tiếng Việt và thay các từ máy đọc sai (chỉ ảnh hưởng giọng đọc)
+function chuanBiDoc(text){
+  let t = String(text).normalize("NFC");
+  for (const r of (DB.caiDat.phatAm || [])){
+    if (!r.tu) continue;
+    const re = new RegExp(r.tu.normalize("NFC").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+    t = t.replace(re, r.doc.normalize("NFC"));
+  }
+  return t;
 }
 function huyDoc(){ if ("speechSynthesis" in window) speechSynthesis.cancel(); }
 const docDapAn = v => v === ">" ? "dấu lớn hơn" : v === "<" ? "dấu bé hơn" : v === "=" ? "dấu bằng" : v;
@@ -1002,6 +1012,17 @@ function tabCaiDat(p){
       </select><button class="btn btn-nho" data-hd="docThu">Đọc thử</button></div>
       <p class="nho">Đồng hồ chỉ bắt đầu đếm sau khi đọc xong câu hỏi.</p>
     </section>
+    <section class="khoi"><h2>Sửa cách đọc</h2>
+      <p>Nếu giọng đọc phát âm sai một từ, hãy nhập cách viết khác để máy đọc đúng. Chữ hiển thị trên màn hình của bé không thay đổi.</p>
+      ${(DB.caiDat.phatAm || []).length ? `<div class="cuon"><table><tr><th>Chữ hiển thị</th><th>Máy sẽ đọc là</th><th></th></tr>
+        ${DB.caiDat.phatAm.map((r, i) => `<tr><td>${esc(r.tu)}</td><td>${esc(r.doc)}</td><td>
+          <button class="btn btn-chu" data-hd="thuPhatAm" data-i="${i}">Nghe</button>
+          <button class="btn btn-chu" data-hd="xoaPhatAm" data-i="${i}">Xóa</button></td></tr>`).join("")}</table></div>` : ""}
+      <div class="hang" style="margin-top:10px"><input id="pamTu" placeholder="Chữ hiển thị, ví dụ: bé hơn" autocomplete="off">
+        <input id="pamDoc" placeholder="Máy sẽ đọc là" autocomplete="off"><button class="btn btn-nho" data-hd="themPhatAm">Thêm</button></div>
+      <h3>Nghe thử một câu</h3>
+      <div class="hang"><input id="pamThu" value="Số nào bé hơn: 3 hay 7?" autocomplete="off"><button class="btn btn-nho" data-hd="docCauThu">Nghe thử</button></div>
+    </section>
     ${p ? `<section class="khoi"><h2>Học tập của ${esc(p.ten)}</h2>
       <label class="chon-o"><input type="checkbox" id="caiMoKhoa" ${p.moKhoaTatCa ? "checked" : ""}> Mở khóa tất cả giai đoạn, bài học và bài kiểm tra</label>
       <p class="nho">Bé có thể vào học bất kỳ bài nào. Điểm số và thành tích vẫn được ghi đúng như thực tế. Bỏ chọn để khóa lại theo tiến độ.</p>
@@ -1118,6 +1139,15 @@ app.addEventListener("click", e => {
       if (confirm("Xóa tất cả câu sai đang lưu?")){ p.cauSai = []; luu(); manPhuHuynh(); }
       break;
     case "docThu":   if (!noi("Xin chào. 3 cộng 4 bằng mấy?")) toast("Máy chưa có giọng đọc tiếng Việt."); break;
+    case "themPhatAm": {
+      const tu = document.getElementById("pamTu").value.trim(), doc = document.getElementById("pamDoc").value.trim();
+      if (!tu || !doc){ toast("Nhập cả chữ hiển thị và cách đọc."); break; }
+      DB.caiDat.phatAm = (DB.caiDat.phatAm || []).filter(r => r.tu.toLowerCase() !== tu.toLowerCase());
+      DB.caiDat.phatAm.push({ tu, doc }); luu(); manPhuHuynh(); noi(tu); break;
+    }
+    case "xoaPhatAm": DB.caiDat.phatAm.splice(Number(b.dataset.i), 1); luu(); manPhuHuynh(); break;
+    case "thuPhatAm": if (!noi(DB.caiDat.phatAm[Number(b.dataset.i)].tu)) toast("Máy chưa có giọng đọc tiếng Việt."); break;
+    case "docCauThu": if (!noi(document.getElementById("pamThu").value)) toast("Máy chưa có giọng đọc tiếng Việt."); break;
     case "xuat":     xuat(); break;
     case "nhap":     document.getElementById("fileNhap").click(); break;
     case "xoaHoSo":

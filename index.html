@@ -224,6 +224,27 @@
   .canh-bao{background:var(--red); color:var(--white); padding:10px 16px; text-align:center; font-size:17px; font-weight:700}
   .toast{position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); background:var(--ink); color:var(--white); padding:10px 20px; border-radius:14px; font-size:18px; font-weight:700; z-index:60; max-width:90vw; text-align:center}
 
+  /* Chặng thử thách, góc trò chơi, thẻ mẹo, gợi ý */
+  .chang.tuy-chon{border-style:dashed}
+  .tro-choi-the{background:#E9F8EE}
+  .luoi-tro{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px}
+  .the-tro{display:flex; flex-direction:column; align-items:flex-start; gap:2px; min-height:160px; padding:14px 16px; background:var(--white); border:3px solid var(--ink); border-radius:18px; box-shadow:0 5px 0 var(--ink); text-align:left}
+  .the-tro .bt{font-size:44px; line-height:1.1}
+  .the-tro .ten{font-size:22px; font-weight:800}
+  .the-tro:disabled{opacity:.5; box-shadow:none}
+  .the-meo{background:var(--white); border:3px solid var(--ink); border-radius:24px; padding:18px 22px; margin-bottom:18px}
+  .the-meo ul{font-size:clamp(18px,3vw,22px); padding-left:24px; margin:10px 0}
+  .the-meo li{margin:8px 0}
+  .the-meo.nho-gon ul{font-size:18px}
+  .hinh-meo{display:grid; gap:4px; justify-items:center; margin-top:6px}
+  .tia-so{display:block; width:100%; max-width:660px; height:auto; margin:4px auto 0}
+  .khung10{width:min(232px,72%); height:auto}
+  .hinh-cau{margin-top:8px}
+  .goi-y-hop{margin:12px 0 6px; padding:10px 14px; background:#FFF7DD; border:3px dashed #E8A600; border-radius:16px; font-size:clamp(16px,2.6vw,20px); font-weight:600; text-align:left}
+  .nut-goi-y{position:absolute; top:10px; left:10px}
+  .la-bai{display:inline-block; min-width:1.3em; padding:.02em .18em; background:var(--white); border:4px solid var(--ink); border-radius:12px; box-shadow:4px 5px 0 var(--ink)}
+  .huong-dan li{margin:8px 0}
+
   /* Máy tính, màn hình rộng */
   @media (min-width:1024px){
     .luoi-bai{grid-template-columns:repeat(5,1fr)}
@@ -300,24 +321,50 @@ const CONFIG = {
     4: { ten: "Rất khó",    mau: "#D6342C", chu: "#FFFFFF", moTa: "Số lớn và dễ nhầm, bé tự bấm số hoặc nói để trả lời." }
   },
   baiHoc: [
-    { ten: "Số liền sau",            dang: ["lienSau"] },
-    { ten: "Số liền trước",          dang: ["lienTruoc"] },
-    { ten: "Lớn hơn, bé hơn",        dang: ["lonHon", "beHon"] },
-    { ten: "Điền dấu > < =",         dang: ["dienDau"] },
-    { ten: "Phép cộng",              dang: ["cong"] },
-    { ten: "Cộng: tìm số còn thiếu", dang: ["cong", "congThieuSo"] },
-    { ten: "Phép trừ",               dang: ["tru"] },
-    { ten: "Trừ: tìm số còn thiếu",  dang: ["tru", "truThieuSo"] },
-    { ten: "Cộng trừ xen kẽ",        dang: ["cong", "tru", "soSanhPhepTinh"] },
-    { ten: "Ôn tập tổng hợp",        dang: ["tatCa"] }
-  ]
+    { id: "lienKe",   ten: "Số liền trước, liền sau",   dang: ["lienSau", "lienTruoc"] },
+    { id: "soSanh",   ten: "Lớn hơn, bé hơn, điền dấu", dang: ["lonHon", "beHon", "dienDau"] },
+    { id: "cong",     ten: "Phép cộng",                  dang: ["cong"] },
+    { id: "banCua10", ten: k => k === 1 ? "Bạn của 10" : "Ghép tròn chục", dang: ["banCua10"] },
+    { id: "gapDoi",   ten: "Gấp đôi",                    dang: ["gapDoi"] },
+    { id: "tru",      ten: "Phép trừ",                   dang: ["tru"] },
+    { id: "thieuSo",  ten: "Tìm số còn thiếu",           dang: ["congThieuSo", "truThieuSo"] },
+    { id: "giaDinh",  ten: "Gia đình số",                dang: ["giaDinhSo"] },
+    { id: "xenKe",    ten: "Cộng trừ xen kẽ",            dang: ["cong", "tru", "soSanhPhepTinh"] },
+    { id: "onTap",    ten: "Ôn tập tổng hợp",            dang: ["tatCa"] }
+  ],
+  // Chặng tùy chọn: cộng trừ có nhớ (qua 10), mở sau giai đoạn 2, không bắt buộc để lên giai đoạn 3
+  thuThach: {
+    ten: "Thử thách qua 10", min: 1, max: 20, khongNho: false, coNho: true, mau: "#C9B2F7",
+    baiHoc: [
+      { id: "ttBan10",    ten: "Ôn bạn của 10",        dang: ["banCua10"] },
+      { id: "ttTachCong", ten: "Tách số để ghép 10",   dang: ["tachCong"] },
+      { id: "ttCong",     ten: "Cộng qua 10",           dang: ["congQua10"] },
+      { id: "ttTachTru",  ten: "Tách số để trừ về 10", dang: ["tachTru"] },
+      { id: "ttTru",      ten: "Trừ qua 10",            dang: ["truQua10"] },
+      { id: "ttTongHop",  ten: "Tổng hợp qua 10",       dang: ["congQua10", "truQua10", "tachCong", "tachTru"] }
+    ]
+  },
+  // Góc trò chơi: chơi cho vui, không tính sao, cúp
+  troChoi: {
+    chopSo: { ten: "Chớp số",         bieuTuong: "⚡", moTa: "Cộng trừ thật nhanh, mỗi câu 5 giây.",   soCau: 10, giay: 5 },
+    ban10:  { ten: "Bạn của 10",      bieuTuong: "🤝", moTa: "Tớ nói 3, cậu nói mấy để được 10?",     soCau: 10, giay: 6 },
+    latBai: { ten: "Lật bài",         bieuTuong: "🃏", moTa: "Lật hai lá bài rồi cộng nhanh.",         soCau: 10, giay: 8 },
+    tiaSo:  { ten: "Ếch nhảy tia số", bieuTuong: "🐸", moTa: "Ếch nhảy tới hay nhảy lùi, đến số mấy?", soCau: 10, giay: 10 }
+  }
 };
-const TAT_CA = ["lienSau","lienTruoc","lonHon","beHon","dienDau","cong","tru","congThieuSo","truThieuSo","soSanhPhepTinh"];
+const TAT_CA = ["lienSau","lienTruoc","lonHon","beHon","dienDau","cong","tru","congThieuSo","truThieuSo","soSanhPhepTinh","banCua10","gapDoi","giaDinhSo"];
 const TEN_DANG = {
   lienSau: "Số liền sau", lienTruoc: "Số liền trước", lonHon: "Số lớn hơn", beHon: "Số bé hơn",
   dienDau: "Điền dấu > < =", cong: "Phép cộng", tru: "Phép trừ", congThieuSo: "Cộng: tìm số thiếu",
-  truThieuSo: "Trừ: tìm số thiếu", soSanhPhepTinh: "So sánh phép tính"
+  truThieuSo: "Trừ: tìm số thiếu", soSanhPhepTinh: "So sánh phép tính", banCua10: "Bạn của 10, tròn chục",
+  gapDoi: "Gấp đôi", giaDinhSo: "Gia đình số", tachCong: "Tách số để cộng", congQua10: "Cộng qua 10",
+  tachTru: "Tách số để trừ", truQua10: "Trừ qua 10"
 };
+const cauHinhGD = k => k === "tt" ? CONFIG.thuThach : CONFIG.giaiDoan[k];
+const dsBai = k => k === "tt" ? CONFIG.thuThach.baiHoc : CONFIG.baiHoc;
+const tenBai = (k, n) => { const b = dsBai(k)[n - 1]; return b ? (typeof b.ten === "function" ? b.ten(k) : b.ten) : ""; };
+const tenGD = k => k === "tt" ? "Thử thách qua 10" : `Giai đoạn ${k}`;
+const docK = v => v === "tt" ? "tt" : Number(v);
 
 // ==GEN-START==
 /* =========================================================
@@ -425,9 +472,18 @@ function cauLonBe(s, lv, lon){
   const sh = shuffle(ds);
   const de = pick([`Số nào ${tu}?`, `Bé chọn số ${tu} nhé`, `Tìm số ${tu}`]);
   return { dang: lon ? "lonHon" : "beHon", de, bieu: "", doc: `${de.replace(/[?]$/, "")}: ${sh.join(", ")}`,
-           dapAn: String(lon ? Math.max(...ds) : Math.min(...ds)), luaChon: sh.map(String) };
+           dapAn: String(lon ? Math.max(...ds) : Math.min(...ds)), luaChon: sh.map(String), m: { lon: Math.max(...ds) } };
 }
 const DE_TINH = ["Tính", "Tính nhẩm", "Bé tính nhé"];
+const vm = (q, m) => Object.assign(q, { m });
+function taoQua10(lv){
+  for (let t = 0; t < 500; t++){
+    const a = rnd(lv === 1 ? 6 : 2, 9), b = rnd(2, 9);
+    if (a + b <= 10) continue;
+    return (lv === 1 || rand() < 0.5) ? [Math.max(a, b), Math.min(a, b)] : [a, b];
+  }
+  return [8, 5];
+}
 
 const GEN = {
   lienSau(s, lv){
@@ -436,9 +492,9 @@ const GEN = {
     if (n === null) n = soTheoDoKho(s, lv, s.min, s.max - 1);
     const kieu = rnd(0, 2);
     if (kieu === 2 && n - 1 >= s.min)
-      return cauSo("lienSau", s, lv, "Đếm tiếp nhé", `${n - 1}, ${n}, ${O}`, `Đếm tiếp: ${n - 1}, ${n}, rồi đến số mấy?`, n + 1, [n, n - 1]);
+      return vm(cauSo("lienSau", s, lv, "Đếm tiếp nhé", `${n - 1}, ${n}, ${O}`, `Đếm tiếp: ${n - 1}, ${n}, rồi đến số mấy?`, n + 1, [n, n - 1]), { n });
     const de = kieu === 1 ? `Số nào đứng ngay sau số ${n}?` : `Số liền sau của ${n} là số mấy?`;
-    return cauSo("lienSau", s, lv, de, `${n}, ${O}`, de, n + 1, [n, n - 1]);
+    return vm(cauSo("lienSau", s, lv, de, `${n}, ${O}`, de, n + 1, [n, n - 1]), { n });
   },
   lienTruoc(s, lv){
     let n = null;
@@ -446,31 +502,31 @@ const GEN = {
     if (n === null) n = soTheoDoKho(s, lv, s.min + 1, s.max);
     const kieu = rnd(0, 2);
     if (kieu === 2 && n + 1 <= s.max)
-      return cauSo("lienTruoc", s, lv, "Đếm lùi nhé", `${n + 1}, ${n}, ${O}`, `Đếm lùi: ${n + 1}, ${n}, rồi đến số mấy?`, n - 1, [n, n + 1]);
+      return vm(cauSo("lienTruoc", s, lv, "Đếm lùi nhé", `${n + 1}, ${n}, ${O}`, `Đếm lùi: ${n + 1}, ${n}, rồi đến số mấy?`, n - 1, [n, n + 1]), { n });
     const de = kieu === 1 ? `Số nào đứng ngay trước số ${n}?` : `Số liền trước của ${n} là số mấy?`;
-    return cauSo("lienTruoc", s, lv, de, `${O}, ${n}`, de, n - 1, [n, n + 1]);
+    return vm(cauSo("lienTruoc", s, lv, de, `${O}, ${n}`, de, n - 1, [n, n + 1]), { n });
   },
   lonHon(s, lv){ return cauLonBe(s, lv, true); },
   beHon(s, lv){ return cauLonBe(s, lv, false); },
   dienDau(s, lv){
     const [x, y] = haiSoKhac(s, lv), a = x, b = rand() < [0, 0.15, 0.2, 0.25, 0.3][lv] ? x : y;
     return { dang: "dienDau", de: pick(["Chọn dấu thích hợp", "Điền dấu > < hoặc ="]), bieu: `${a} ${O} ${b}`,
-             doc: `Chọn dấu lớn hơn, bé hơn hay bằng, giữa ${a} và ${b}`, dapAn: dau(a, b), luaChon: [">", "<", "="] };
+             doc: `Chọn dấu lớn hơn, bé hơn hay bằng, giữa ${a} và ${b}`, dapAn: dau(a, b), luaChon: [">", "<", "="], m: { lon: Math.max(a, b) } };
   },
   cong(s, lv){ const [a, b] = taoCong(s, lv);
     const bieu = (lv >= 2 && rand() < 0.3) ? `${O} = ${a} + ${b}` : `${a} + ${b} = ${O}`;
-    return cauSo("cong", s, lv, pick(DE_TINH), bieu, `${a} cộng ${b} bằng mấy?`, a + b, [Math.abs(a - b)]); },
+    return vm(cauSo("cong", s, lv, pick(DE_TINH), bieu, `${a} cộng ${b} bằng mấy?`, a + b, [Math.abs(a - b)]), { a, b }); },
   tru(s, lv){ const [a, b] = taoTru(s, lv);
     const bieu = (lv >= 2 && rand() < 0.3) ? `${O} = ${a} ${TRU} ${b}` : `${a} ${TRU} ${b} = ${O}`;
-    return cauSo("tru", s, lv, pick(DE_TINH), bieu, `${a} trừ ${b} bằng mấy?`, a - b, [a + b]); },
+    return vm(cauSo("tru", s, lv, pick(DE_TINH), bieu, `${a} trừ ${b} bằng mấy?`, a - b, [a + b]), { a, b }); },
   congThieuSo(s, lv){ const [a, b] = taoCong(s, lv), c = a + b;
     return rand() < 0.5
-      ? cauSo("congThieuSo", s, lv, "Tìm số còn thiếu", `${O} + ${b} = ${c}`, `Số mấy cộng ${b} bằng ${c}?`, a, [b, c])
-      : cauSo("congThieuSo", s, lv, "Tìm số còn thiếu", `${a} + ${O} = ${c}`, `${a} cộng mấy bằng ${c}?`, b, [a, c]); },
+      ? vm(cauSo("congThieuSo", s, lv, "Tìm số còn thiếu", `${O} + ${b} = ${c}`, `Số mấy cộng ${b} bằng ${c}?`, a, [b, c]), { a, b, c, thieu: "a" })
+      : vm(cauSo("congThieuSo", s, lv, "Tìm số còn thiếu", `${a} + ${O} = ${c}`, `${a} cộng mấy bằng ${c}?`, b, [a, c]), { a, b, c, thieu: "b" }); },
   truThieuSo(s, lv){ const [a, b] = taoTru(s, lv), c = a - b;
     return rand() < 0.5
-      ? cauSo("truThieuSo", s, lv, "Tìm số còn thiếu", `${a} ${TRU} ${O} = ${c}`, `${a} trừ mấy bằng ${c}?`, b, [c, a])
-      : cauSo("truThieuSo", s, lv, "Tìm số còn thiếu", `${O} ${TRU} ${b} = ${c}`, `Số mấy trừ ${b} bằng ${c}?`, a, [c, b]); },
+      ? vm(cauSo("truThieuSo", s, lv, "Tìm số còn thiếu", `${a} ${TRU} ${O} = ${c}`, `${a} trừ mấy bằng ${c}?`, b, [c, a]), { a, b, c, thieu: "b" })
+      : vm(cauSo("truThieuSo", s, lv, "Tìm số còn thiếu", `${O} ${TRU} ${b} = ${c}`, `Số mấy trừ ${b} bằng ${c}?`, a, [c, b]), { a, b, c, thieu: "a" }); },
   soSanhPhepTinh(s, lv){
     const laCong = rand() < 0.5, [a, b] = laCong ? taoCong(s, lv) : taoTru(s, lv);
     const r = laCong ? a + b : a - b;
@@ -480,13 +536,81 @@ const GEN = {
     const pt = `${a} ${laCong ? "+" : TRU} ${b}`;
     return { dang: "soSanhPhepTinh", de: "Chọn dấu thích hợp", bieu: truoc ? `${pt} ${O} ${n}` : `${n} ${O} ${pt}`,
              doc: truoc ? `So sánh ${a} ${laCong ? "cộng" : "trừ"} ${b} với ${n}` : `So sánh ${n} với ${a} ${laCong ? "cộng" : "trừ"} ${b}`,
-             dapAn: truoc ? dau(r, n) : dau(n, r), luaChon: [">", "<", "="] };
+             dapAn: truoc ? dau(r, n) : dau(n, r), luaChon: [">", "<", "="], m: { a, b, n, op: laCong ? "+" : "-" } };
+  },
+  // Bạn của 10 (giai đoạn 1, chặng thử thách) và ghép tròn chục (giai đoạn 2–4)
+  banCua10(s, lv){
+    const muoi = s.max <= 10 || s.coNho;
+    let T, a;
+    if (muoi){ T = 10; a = rnd(1, 9); }
+    else {
+      const chuc = []; for (let v = 20; v <= s.max; v += 10) chuc.push(v);
+      if (lv === 1) chuc.unshift(10);
+      T = pick(chuc); a = T - rnd(1, 9);
+    }
+    const b = T - a, kieu = rnd(0, 2), ten = muoi ? "Bạn của 10" : "Ghép tròn chục";
+    if (muoi && kieu === 0) return vm(cauSo("banCua10", s, lv, `Tớ nói ${a}, cậu nói mấy?`, `${a} + ${O} = 10`, `Tớ nói ${a}, cậu nói mấy để được 10?`, b, [a, b + 1]), { a, T });
+    if (kieu === 1) return vm(cauSo("banCua10", s, lv, ten, `${O} + ${a} = ${T}`, `Số mấy cộng ${a} bằng ${T}?`, b, [a % 10, b + 1]), { a, T });
+    return vm(cauSo("banCua10", s, lv, ten, `${a} + ${O} = ${T}`, `${a} cộng mấy bằng ${T}?`, b, [a % 10, b - 1]), { a, T });
+  },
+  gapDoi(s, lv){
+    let ds = [];
+    if (s.max <= 10) ds = [1, 2, 3, 4, 5];
+    else if (s.max <= 20) ds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    else for (let v = 1; v * 2 <= s.max; v++) if (v % 10 <= 4) ds.push(v);
+    if (lv === 1) ds = ds.filter(v => v <= (s.max <= 20 ? 5 : 20));
+    else if (lv >= 3 && ds.length > 6) ds = ds.slice(Math.floor(ds.length / 3));
+    const n = pick(ds);
+    if (lv >= 3 && rand() < 0.5 && n * 2 + 1 <= s.max && (s.max <= 20 || n % 10 <= 3)){
+      const b = n + 1;
+      return vm(cauSo("gapDoi", s, lv, "Gần gấp đôi", `${n} + ${b} = ${O}`, `${n} cộng ${b} bằng mấy?`, n + b, [n + n, n + b + 1]), { n, gan: true });
+    }
+    if (lv >= 2 && rand() < 0.35)
+      return vm(cauSo("gapDoi", s, lv, "Số nào cộng với chính nó?", `${O} + ${O} = ${n * 2}`, `Số nào cộng với chính nó bằng ${n * 2}?`, n, [n * 2, n + 1]), { n, nguoc: true });
+    return vm(cauSo("gapDoi", s, lv, pick(["Gấp đôi", `Gấp đôi số ${n}`]), `${n} + ${n} = ${O}`, `${n} cộng ${n} bằng mấy?`, n * 2, [n * 2 + 1, n + 1]), { n });
+  },
+  giaDinhSo(s, lv){
+    const [a, b] = taoCong(s, lv), c = a + b;
+    const pts = [
+      [`${a} + ${b} = ${O}`, `${a} cộng ${b} bằng mấy?`, c],
+      [`${b} + ${a} = ${O}`, `${b} cộng ${a} bằng mấy?`, c],
+      [`${c} ${TRU} ${a} = ${O}`, `${c} trừ ${a} bằng mấy?`, b],
+      [`${c} ${TRU} ${b} = ${O}`, `${c} trừ ${b} bằng mấy?`, a],
+      [`${a} + ${O} = ${c}`, `${a} cộng mấy bằng ${c}?`, b],
+      [`${c} ${TRU} ${O} = ${a}`, `${c} trừ mấy bằng ${a}?`, b]
+    ];
+    const [bieu, cau, dapAn] = pick(lv === 1 ? pts.slice(0, 4) : pts);
+    const [x, y] = shuffle([a, b]);
+    return vm(cauSo("giaDinhSo", s, lv, `Gia đình số: ${x}, ${y}, ${c}`, bieu, `Gia đình số ${x}, ${y}, ${c}. ${cau}`, dapAn, [a, b, c].filter(v => v !== dapAn)), { a, b, c });
+  },
+  // Chặng thử thách qua 10
+  congQua10(s, lv){ const [a, b] = taoQua10(lv);
+    return vm(cauSo("congQua10", s, lv, pick(DE_TINH), `${a} + ${b} = ${O}`, `${a} cộng ${b} bằng mấy?`, a + b, [a + b - 10, a + b + 1]), { a, b }); },
+  truQua10(s, lv){ const [x, b] = taoQua10(lv), a = x + b;
+    return vm(cauSo("truQua10", s, lv, pick(DE_TINH), `${a} ${TRU} ${b} = ${O}`, `${a} trừ ${b} bằng mấy?`, x, [x + 1, a - 10]), { a, b }); },
+  tachCong(s, lv){ const [a, b] = taoQua10(lv), can = 10 - a, con = b - can;
+    return vm(cauSo("tachCong", s, lv, `Tách ${b} để ${a} thành 10: ${a} + ${b}`, `${a} + ${can} + ${O}`, `${a} cộng ${b}. Tách ${b} thành ${can} và mấy?`, con, [can, b]), { a, b, can, con }); },
+  tachTru(s, lv){ const [x, b] = taoQua10(lv), a = x + b, u = a - 10, con = b - u;
+    return vm(cauSo("tachTru", s, lv, `Tách ${b} để trừ về 10: ${a} ${TRU} ${b}`, `${a} ${TRU} ${u} ${TRU} ${O}`, `${a} trừ ${b}. Tách ${b} thành ${u} và mấy?`, con, [u, b]), { a, b, u, con }); },
+  // Trò chơi
+  latBai(s, lv){
+    const maxLa = s.max <= 10 ? 9 : 10;
+    let a, b; do { a = rnd(1, maxLa); b = rnd(1, maxLa); } while (a + b > s.max);
+    return vm(cauSo("latBai", s, Math.min(lv, 3), "Lật bài: cộng hai lá", `<span class="la-bai">${a}</span> + <span class="la-bai">${b}</span> = ${O}`, `${a} cộng ${b} bằng mấy?`, a + b, [Math.abs(a - b), a + b + 1]), { a, b });
+  },
+  tiaSo(s, lv){
+    const R = s.max <= 10 ? 10 : 20;
+    let st, j; do { st = rnd(0, R); j = pick([-1, 1]) * rnd(1, R === 10 ? 4 : 6); } while (st + j < 0 || st + j > R);
+    const de = j > 0 ? `Ếch đứng ở số ${st}, nhảy tới ${j} bước. Ếch đến số mấy?` : `Ếch đứng ở số ${st}, nhảy lùi ${-j} bước. Ếch đến số mấy?`;
+    const q = cauSo("tiaSo", { min: 0, max: R }, Math.min(lv, 3), de, "", de, st + j, [st, st + j + (j > 0 ? 1 : -1)]);
+    q.hinh = tiaSoSVG(0, R, st, [j], true, true); q.vanBan = `${st} ${Math.abs(j)} ${st + j}`;
+    return vm(q, { st, j });
   }
 };
 
 // "Dấu vết" của câu hỏi: tập các số xuất hiện + đáp án → để nhận ra câu giống nhau (3+4 và 4+3)
 function vanCau(q){
-  const so = new Set(((q.bieu + " " + q.doc).match(/\d+/g) || []).map(Number));
+  const so = new Set(((q.vanBan || (q.bieu + " " + q.doc)).match(/\d+/g) || []).map(Number));
   if (/^\d+$/.test(q.dapAn)) so.add(Number(q.dapAn));
   const ds = [...so].sort((a, b) => a - b);
   return { so: ds, khoa: ds.join(","), dapAn: q.dapAn, dang: q.dang, lon: ds.length ? ds[ds.length - 1] : 0 };
@@ -531,18 +655,19 @@ function tachLienTiep(a){
   }
   return a;
 }
-function dangChoBai(chiSoBai){
-  let ds = CONFIG.baiHoc[chiSoBai].dang;
+function dangChoBai(k, chiSoBai){
+  let ds = dsBai(k)[chiSoBai].dang;
   if (ds[0] === "tatCa") ds = TAT_CA;
   const tron = shuffle(ds), out = [];
   for (let i = 0; i < CONFIG.soCauBai; i++) out.push(tron[i % tron.length]);
   return tachLienTiep(shuffle(out));
 }
+// Bài kiểm tra 30 câu: 15 câu so sánh + 15 câu tính toán (có cả bạn của 10, gấp đôi, gia đình số)
 function dangKiemTra(){
   const soSanh = ["lienSau","lienTruoc","lonHon","beHon","dienDau"], ds = [];
   for (let i = 0; i < 3; i++) ds.push(...soSanh);
-  for (let i = 0; i < 6; i++) ds.push("cong", "tru");
-  for (let i = 0; i < 3; i++) ds.push(pick(["congThieuSo","truThieuSo","soSanhPhepTinh"]));
+  for (let i = 0; i < 5; i++) ds.push("cong", "tru");
+  for (let i = 0; i < 5; i++) ds.push(pick(["congThieuSo","truThieuSo","soSanhPhepTinh","banCua10","gapDoi","giaDinhSo"]));
   return tachLienTiep(shuffle(ds));
 }
 
@@ -593,7 +718,7 @@ function hieuCauTraLoi(ds, c){
    ========================================================= */
 const KHOA_LUU = "beHocToanLop1_v1";
 let luuDuoc = true;
-const caiDatMoi = () => ({ amThanh: true, tuDoc: true, giong: "", tocDo: 0.9, phatAm: [], traLoiGiong: false, ngheTuDong: true });
+const caiDatMoi = () => ({ amThanh: true, tuDoc: true, giong: "", tocDo: 0.9, phatAm: [], traLoiGiong: false, ngheTuDong: true, goiY: true, theMeo: "lanDau", gioiHanChoi: 15 });
 const dbMoi = () => ({ phienBan: 3, hoSo: {}, dangChon: null, khoa: false, caiDat: caiDatMoi() });
 
 function chuanHoa(p){
@@ -603,7 +728,23 @@ function chuanHoa(p){
   if (!p.doKhoKiemTra) p.doKhoKiemTra = 2;
   if (p.moKhoaTatCa === undefined) p.moKhoaTatCa = false;
   if (p.huyHieu === undefined) p.huyHieu = null;   // null = hồ sơ cũ, sẽ ghi nhận huy hiệu đã có mà không chúc mừng lại
+  p.daXemMeo = p.daXemMeo || {}; p.troChoi = p.troChoi || {};
+  if (p.phienBanBai === undefined){ chuyenBaiCu(p); p.phienBanBai = 2; }
   return p;
+}
+// Chuyển điểm từ cách xếp 10 bài cũ sang cách xếp mới để bé không mất sao
+const BAI_CU = ["Số liền sau","Số liền trước","Lớn hơn, bé hơn","Điền dấu > < =","Phép cộng","Cộng: tìm số còn thiếu","Phép trừ","Trừ: tìm số còn thiếu","Cộng trừ xen kẽ","Ôn tập tổng hợp"];
+const CU_SANG_MOI = { 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 7, 7: 6, 8: 7, 9: 9, 10: 10 };
+function chuyenBaiCu(p){
+  for (const k in (p.gd || {})){
+    const d = p.gd[k]; if (!d || !d.diemBai) continue;
+    const nguonDK = d.diemDoKho || Object.fromEntries(Object.entries(d.diemBai).map(([n, v]) => [n, { 2: v }]));
+    const db = {}, dk = {};
+    for (const n in d.diemBai){ const m = CU_SANG_MOI[n]; if (m) db[m] = Math.max(db[m] ?? -1, d.diemBai[n]); }
+    for (const n in nguonDK){ const m = CU_SANG_MOI[n]; if (!m) continue; dk[m] = dk[m] || {}; for (const lv in nguonDK[n]) dk[m][lv] = Math.max(dk[m][lv] ?? -1, nguonDK[n][lv]); }
+    d.diemBai = db; d.diemDoKho = dk; delete d.qua;
+  }
+  (p.lichSu || []).forEach(x => { if (x.loai === "bai" && !x.tenBai) x.tenBai = BAI_CU[x.n - 1] || ""; });
 }
 function napDuLieu(d){
   const db = Object.assign(dbMoi(), d);
@@ -639,15 +780,18 @@ function hoSo(){
   return p;
 }
 function gd(p, k){
-  if (!p.gd[k]) p.gd[k] = { diemBai: {}, diemDoKho: {}, kiemTra: [], daQua: false };
+  if (!p.gd[k]) p.gd[k] = { diemBai: {}, diemDoKho: {}, qua: {}, kiemTra: [], daQua: false };
   const d = p.gd[k];
   if (!d.diemDoKho){ d.diemDoKho = {}; for (const n in d.diemBai) d.diemDoKho[n] = { 2: d.diemBai[n] }; }
+  if (!d.qua){ d.qua = {}; for (const n in d.diemBai) if (d.diemBai[n] >= CONFIG.diemDatBai) d.qua[n] = true; }
   return d;
 }
-function tongSao(p, k){ const d = gd(p, k); let s = 0; for (let n = 1; n <= 10; n++) s += d.diemBai[n] || 0; return s; }
-const moGD  = (p, k) => p.moKhoaTatCa || k === 1 || gd(p, k - 1).daQua;
-const moBai = (p, k, n) => p.moKhoaTatCa || n === 1 || (gd(p, k).diemBai[n - 1] || 0) >= CONFIG.diemDatBai;
-const moKT  = (p, k) => p.moKhoaTatCa || ((gd(p, k).diemBai[10] || 0) >= CONFIG.diemDatBai && tongSao(p, k) >= CONFIG.saoMoKiemTra);
+// Sao = số câu đúng không dùng gợi ý (lần làm tốt nhất mỗi bài)
+function tongSao(p, k){ const d = gd(p, k); let s = 0; for (let n = 1; n <= dsBai(k).length; n++) s += d.diemBai[n] || 0; return s; }
+const moGD  = (p, k) => p.moKhoaTatCa || k === 1 || (k === "tt" ? gd(p, 2).daQua : gd(p, k - 1).daQua);
+const moBai = (p, k, n) => { const d = gd(p, k); return p.moKhoaTatCa || n === 1 || !!d.qua[n - 1] || d.diemBai[n] != null; };
+const moKT  = (p, k) => p.moKhoaTatCa || (!!gd(p, k).qua[10] && tongSao(p, k) >= CONFIG.saoMoKiemTra);
+const ttXong = p => dsBai("tt").every((b, i) => gd(p, "tt").qua[i + 1]);
 function gdHienTai(p){ let k = 1; while (k < 4 && gd(p, k).daQua) k++; return k; }
 
 const CUP = { vang: { ten: "Cúp vàng", mau: "#F5C518" }, bac: { ten: "Cúp bạc", mau: "#CBD3DE" }, dong: { ten: "Cúp đồng", mau: "#D08A4E" } };
@@ -668,7 +812,7 @@ function cupSVG(loai, so){
 
 // Ngân hàng câu sai
 const khoaCau = c => c.de + "|" + c.bieu + "|" + c.doc;
-const chepCau = c => ({ dang: c.dang, de: c.de, bieu: c.bieu, doc: c.doc, dapAn: c.dapAn, luaChon: (c.luaChon || []).slice(), nhapSo: !!c.nhapSo });
+const chepCau = c => ({ dang: c.dang, de: c.de, bieu: c.bieu, doc: c.doc, dapAn: c.dapAn, luaChon: (c.luaChon || []).slice(), nhapSo: !!c.nhapSo, m: c.m, hinh: c.hinh || "", vanBan: c.vanBan });
 function themCauSai(p, c, k, lv){
   const key = khoaCau(c), cu = p.cauSai.find(x => x.key === key), ngay = new Date().toISOString();
   if (cu){ cu.lanSai++; cu.ngay = ngay; return; }
@@ -717,6 +861,7 @@ function giongViet(){
 }
 function chuanBiDoc(text){
   let t = String(text).normalize("NFC");
+  t = t.replace(/\s−\s/g, " trừ ").replace(/\s\+\s/g, " cộng ").replace(/\s=\s/g, " bằng ").replace(/\s>\s/g, " lớn hơn ").replace(/\s<\s/g, " bé hơn ");
   for (const r of (DB.caiDat.phatAm || [])){
     if (!r.tu) continue;
     const re = new RegExp(r.tu.normalize("NFC").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
@@ -793,7 +938,7 @@ function thuMic(){
 // Đồng hồ đếm ngược
 let dongHo = null;
 function dungDongHo(){ if (dongHo){ clearInterval(dongHo); dongHo = null; } }
-function thoiGianCau(){ return Q.loai === "kiemtra" ? CONFIG.thoiGianKiemTra : Q.loai === "on" ? CONFIG.thoiGianOn : CONFIG.thoiGianBai; }
+function thoiGianCau(){ return Q.loai === "choi" ? Q.tg : Q.loai === "kiemtra" ? CONFIG.thoiGianKiemTra : Q.loai === "on" ? CONFIG.thoiGianOn : CONFIG.thoiGianBai; }
 function veDongHo(con, tg){
   const el = document.getElementById("dongHo"); if (!el) return;
   const giay = Math.ceil(con / 1000);
@@ -852,6 +997,151 @@ function hoiPhuHuynh(cb){
   if (t === null) return;
   if (parseInt(t, 10) === a * b) cb(); else toast("Chưa đúng, thử lại nhé.");
 }
+
+/* =========================================================
+   4b. TIA SỐ, KHUNG 10, GỢI Ý VÀ THẺ MẸO
+   ========================================================= */
+function tiaSoSVG(a, b, start, buoc, an, ech){
+  const n = b - a, W = n <= 10 ? 440 : 660, H = ech ? 134 : 120, l = 20, r = W - 26, y = H - 36;
+  const x = v => l + (v - a) * (r - l) / n;
+  let cuoi = start; buoc.forEach(j => cuoi += j);
+  const F = 'font-family="Baloo 2, Segoe UI, sans-serif"';
+  let s = `<svg class="tia-so" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tia số từ ${a} đến ${b}">`;
+  s += `<line x1="${l - 8}" y1="${y}" x2="${r + 10}" y2="${y}" stroke="#1E3A8A" stroke-width="3"/><path d="M${r + 8} ${y - 6}l12 6-12 6z" fill="#1E3A8A"/>`;
+  for (let v = a; v <= b; v++){
+    const X = x(v), giau = an && v === cuoi;
+    const mau = giau ? "#D6342C" : v === cuoi ? "#2F9E5B" : v === start ? "#D6342C" : "#1E3A8A";
+    s += `<line x1="${X}" y1="${y - 7}" x2="${X}" y2="${y + 7}" stroke="#1E3A8A" stroke-width="2"/>`;
+    s += `<text x="${X}" y="${y + 27}" text-anchor="middle" font-size="${n <= 10 ? 17 : 14}" font-weight="${v === start || v === cuoi ? 800 : 500}" fill="${mau}" ${F}>${giau ? "?" : v}</text>`;
+  }
+  let cur = start;
+  buoc.forEach((j, i) => {
+    const x1 = x(cur), x2 = x(cur + j), cao = 18 + Math.min(34, Math.abs(x2 - x1) * 0.3), mau = j > 0 ? "#2F9E5B" : "#E0701F";
+    s += `<path d="M${x1} ${y - 8} Q ${(x1 + x2) / 2} ${y - 8 - cao * 2} ${x2} ${y - 8}" fill="none" stroke="${mau}" stroke-width="3"${i ? ' stroke-dasharray="6 4"' : ""}/>`;
+    s += `<circle cx="${x2}" cy="${y - 8}" r="4.5" fill="${mau}"/>`;
+    s += `<text x="${(x1 + x2) / 2}" y="${y - 14 - cao}" text-anchor="middle" font-size="16" font-weight="800" fill="${mau}" ${F}>${j > 0 ? "+" : "−"}${Math.abs(j)}</text>`;
+    cur += j;
+  });
+  s += `<circle cx="${x(start)}" cy="${y}" r="7" fill="#D6342C"/>`;
+  if (ech) s += `<text x="${x(start)}" y="${y - 12}" text-anchor="middle" font-size="26">🐸</text>`;
+  return s + "</svg>";
+}
+function khung10SVG(a){
+  let s = '<svg class="khung10" viewBox="0 0 232 100" role="img" aria-label="Khung 10 ô">';
+  for (let i = 0; i < 10; i++){
+    const X = 6 + (i % 5) * 45, Y = 6 + Math.floor(i / 5) * 45, co = i < a;
+    s += `<rect x="${X}" y="${Y}" width="41" height="41" rx="7" fill="#fff" stroke="#1E3A8A" stroke-width="3"/>`;
+    s += co ? `<circle cx="${X + 20.5}" cy="${Y + 20.5}" r="13" fill="#D6342C"/>` : `<circle cx="${X + 20.5}" cy="${Y + 20.5}" r="12" fill="none" stroke="#3B82C4" stroke-width="3" stroke-dasharray="4 3"/>`;
+  }
+  return s + "</svg>";
+}
+function veTia(start, buoc){
+  let cur = start, mx = start, mn = start;
+  buoc.forEach(j => { cur += j; mx = Math.max(mx, cur); mn = Math.min(mn, cur); });
+  if (mn < 0 || mx > 20) return "";
+  let a = Math.max(0, mn - 2), b = Math.min(20, mx + 2);
+  while (b - a < 8){ if (a > 0) a--; if (b - a < 8 && b < 20) b++; }
+  return tiaSoSVG(a, b, start, buoc);
+}
+function meoCong(a, b){
+  const L = Math.max(a, b), S = Math.min(a, b);
+  if (S === 0) return "Cộng với 0 thì giữ nguyên số đó.";
+  if (S === 1) return `Cộng 1 là số liền sau của ${L}.`;
+  if (a === b) return `Gấp đôi: ${a} + ${a}. Bé nhớ bảng gấp đôi không?`;
+  if (L - S === 1 && L <= 10) return `Gần gấp đôi: tính ${S} + ${S} trước rồi thêm 1.`;
+  if (a < 10 && b < 10 && a + b === 10) return `${a} và ${b} là bạn của 10!`;
+  if (a >= 10 && b >= 10) return `Cộng hàng đơn vị trước: ${a % 10} + ${b % 10}. Rồi cộng hàng chục: ${Math.floor(a / 10)} chục và ${Math.floor(b / 10)} chục.`;
+  if (L >= 10) return `Giữ ${L} trong đầu, cộng thêm ${S} vào hàng đơn vị.`;
+  return `Đếm tiếp từ số lớn: giữ ${L} trong đầu, đếm thêm ${S} bước.` + (a < b ? ` Đổi chỗ thành ${b} + ${a} cho dễ.` : "");
+}
+function meoTru(a, b){
+  if (b === 0) return "Trừ 0 thì giữ nguyên số đó.";
+  if (b === 1) return `Trừ 1 là số liền trước của ${a}.`;
+  if (b === a) return "Một số trừ chính nó thì bằng 0.";
+  if (a >= 10 && b >= 10) return `Trừ hàng đơn vị trước: ${a % 10} − ${b % 10}. Rồi trừ hàng chục.`;
+  if (a > 20) return `Giữ nguyên hàng chục, trừ hàng đơn vị: ${a % 10} − ${b}.`;
+  if (b <= 3) return `Đếm lùi ${b} bước từ ${a}.`;
+  return `Nghĩ ngược bằng phép cộng: ${b} cộng mấy bằng ${a}?`;
+}
+// Gợi ý cho từng câu hỏi: { t: lời gợi ý, h: hình minh họa }
+function goiY(q){
+  const m = q.m;
+  if (!m) return { t: "Đọc kỹ câu hỏi và dùng các mẹo đã học nhé.", h: "" };
+  switch (q.dang){
+    case "lienSau":   return { t: `Số liền sau là đếm thêm 1 từ số ${m.n}.`, h: veTia(m.n, [1]) };
+    case "lienTruoc": return { t: `Số liền trước là lùi lại 1 từ số ${m.n}.`, h: veTia(m.n, [-1]) };
+    case "lonHon": case "beHon":
+      return { t: m.lon >= 10 ? "So hàng chục trước. Nếu hàng chục bằng nhau thì so hàng đơn vị." : "Trên tia số, số nằm bên phải thì lớn hơn.", h: "" };
+    case "dienDau":
+      return { t: (m.lon >= 10 ? "So hàng chục trước, rồi mới so hàng đơn vị. " : "") + "Miệng cá sấu luôn há về phía số lớn hơn.", h: "" };
+    case "cong": case "latBai": {
+      const L = Math.max(m.a, m.b), S = Math.min(m.a, m.b);
+      return { t: meoCong(m.a, m.b), h: S >= 2 && S <= 5 && L + S <= 20 ? veTia(L, [S]) : "" };
+    }
+    case "tru": return { t: meoTru(m.a, m.b), h: m.b >= 2 && m.b <= 4 && m.a <= 20 ? veTia(m.a, [-m.b]) : "" };
+    case "congThieuSo": return { t: `Nghĩ ngược: ${m.c} trừ ${m.thieu === "a" ? m.b : m.a} bằng mấy?`, h: "" };
+    case "truThieuSo": return { t: m.thieu === "b" ? `Nghĩ ngược: lấy ${m.a} trừ ${m.c}.` : `Nghĩ ngược: lấy ${m.c} cộng ${m.b}.`, h: "" };
+    case "soSanhPhepTinh": return { t: `Tính ${m.a} ${m.op === "+" ? "+" : TRU} ${m.b} trước, rồi so kết quả với ${m.n}.`, h: "" };
+    case "banCua10":
+      return m.T === 10 ? { t: `Bạn của 10: 1 và 9, 2 và 8, 3 và 7, 4 và 6, 5 và 5. Đếm số ô trống trong khung.`, h: khung10SVG(m.a) }
+                        : { t: `${m.a} có ${m.a % 10} đơn vị. Bạn của ${m.a % 10} là số mấy để thành tròn chục?`, h: khung10SVG(m.a % 10) };
+    case "gapDoi":
+      return { t: m.gan ? `Gần gấp đôi: tính ${m.n} + ${m.n} trước, rồi thêm 1.` : m.nguoc ? "Nhớ lại bảng gấp đôi: 1 + 1, 2 + 2, 3 + 3, 4 + 4, 5 + 5…" : `Gấp đôi là cộng số đó với chính nó.`, h: "" };
+    case "giaDinhSo": return { t: "Trong gia đình số, số lớn nhất bằng tổng hai số kia. Lấy số lớn trừ một số thì ra số còn lại.", h: "" };
+    case "congQua10": case "tachCong": {
+      const can = 10 - m.a;
+      return { t: `Ghép thành 10 trước: ${m.a} cần thêm ${can} để thành 10. Tách ${m.b} thành ${can} và phần còn lại.`, h: veTia(m.a, [can, m.b - can]) };
+    }
+    case "truQua10": case "tachTru": {
+      const u = m.a - 10;
+      return { t: `Trừ về 10 trước: ${m.a} − ${u} = 10. Tách ${m.b} thành ${u} và phần còn lại.`, h: veTia(m.a, [-u, -(m.b - u)]) };
+    }
+    case "tiaSo": return { t: "Đặt ngón tay ở chỗ ếch đứng rồi đếm từng bước nhảy.", h: "" };
+  }
+  return { t: "Đọc kỹ câu hỏi và dùng các mẹo đã học nhé.", h: "" };
+}
+// Thẻ mẹo trước mỗi bài
+const MEO = {
+  lienKe: () => ({ y: ["Số liền sau: đếm thêm 1. Liền sau của 6 là 7.", "Số liền trước: lùi lại 1. Liền trước của 6 là 5."], hinh: tiaSoSVG(0, 10, 6, [1]) + tiaSoSVG(0, 10, 6, [-1]) }),
+  soSanh: () => ({ y: ["Trên tia số, số nằm bên phải thì lớn hơn.", "Số có hai chữ số: so hàng chục trước. Hàng chục bằng nhau thì so hàng đơn vị. Ví dụ 43 lớn hơn 34.", "Dấu lớn hơn, bé hơn giống miệng cá sấu: miệng luôn há về phía số lớn hơn. 7 > 3, 2 < 5."], hinh: "" }),
+  cong: () => ({ y: ["Đếm tiếp từ số lớn: 2 + 6, giữ 6 trong đầu rồi đếm 7, 8.", "Đổi chỗ hai số, kết quả không đổi: 2 + 7 = 7 + 2. Lấy số lớn đứng trước cho dễ.", "Cộng 0 thì giữ nguyên. Cộng 1 là số liền sau."], hinh: tiaSoSVG(0, 10, 6, [2]) }),
+  banCua10: k => (k === 1 || k === "tt")
+    ? { y: ["Các cặp bạn của 10: 1 và 9, 2 và 8, 3 và 7, 4 và 6, 5 và 5.", "Chơi trò: tớ nói 3, cậu nói 7!", "Nhìn khung 10: có 3 chấm đỏ thì còn 7 ô trống."], hinh: khung10SVG(3) }
+    : { y: ["Ghép tròn chục dùng bạn của 10.", "13 + 7 = 20, vì 3 và 7 là bạn của 10.", "26 + 4 = 30, vì 6 và 4 là bạn của 10."], hinh: khung10SVG(6) },
+  gapDoi: () => ({ y: ["Gấp đôi là cộng một số với chính nó: 1 + 1 = 2, 2 + 2 = 4, 3 + 3 = 6, 4 + 4 = 8, 5 + 5 = 10.", "Gần gấp đôi: 4 + 5 = 4 + 4 + 1 = 9."], hinh: "" }),
+  tru: () => ({ y: ["Đếm lùi với số nhỏ: 8 − 2, đếm lùi 7, 6.", "Trừ 0 thì giữ nguyên. Trừ 1 là số liền trước.", "Nghĩ ngược bằng phép cộng: 9 − 6 = ? thì hỏi 6 cộng mấy bằng 9."], hinh: tiaSoSVG(0, 10, 8, [-2]) }),
+  thieuSo: () => ({ y: ["? + 3 = 7: nghĩ ngược, 7 − 3 = 4.", "9 − ? = 6: 6 cộng mấy bằng 9? Đáp án là 3.", "? − 2 = 5: lấy 5 + 2 = 7."], hinh: "" }),
+  giaDinh: () => ({ y: ["Ba số 3, 6, 9 là một gia đình số.", "Gia đình có 4 phép tính: 3 + 6 = 9, 6 + 3 = 9, 9 − 3 = 6, 9 − 6 = 3.", "Số lớn nhất luôn bằng tổng hai số kia."], hinh: "" }),
+  xenKe: () => ({ y: ["Nhìn kỹ dấu cộng hay dấu trừ trước khi tính.", "So sánh phép tính với một số: tính kết quả trước, rồi mới chọn dấu."], hinh: "" }),
+  onTap: () => ({ y: ["Dùng các mẹo đã học: đếm tiếp, bạn của 10, gấp đôi, nghĩ ngược.", "Không cần vội. Hiểu trước, nhanh sau."], hinh: "" }),
+  ttBan10: () => MEO.banCua10(1),
+  ttTachCong: () => ({ y: ["8 + 5: số 8 cần thêm 2 để thành 10.", "Tách 5 thành 2 và 3.", "8 + 2 = 10, rồi 10 + 3 = 13."], hinh: tiaSoSVG(6, 15, 8, [2, 3]) }),
+  ttCong: () => MEO.ttTachCong(),
+  ttTachTru: () => ({ y: ["14 − 6: trừ về 10 trước.", "Tách 6 thành 4 và 2.", "14 − 4 = 10, rồi 10 − 2 = 8."], hinh: tiaSoSVG(6, 16, 14, [-4, -2]) }),
+  ttTru: () => MEO.ttTachTru(),
+  ttTongHop: () => ({ y: ["Cộng qua 10: ghép thành 10 trước rồi cộng phần còn lại.", "Trừ qua 10: trừ về 10 trước rồi trừ tiếp phần còn lại."], hinh: tiaSoSVG(5, 15, 7, [3, 4]) })
+};
+function noiDungMeo(k, n){ const b = dsBai(k)[n - 1]; return (MEO[b.id] || MEO.onTap)(k); }
+// Lời khuyên cho phụ huynh theo dạng bài bé còn yếu
+const LOI_KHUYEN = {
+  lienSau: "Đếm xuôi cùng bé khi lên cầu thang hoặc xếp đồ chơi thành hàng.",
+  lienTruoc: "Đếm ngược cùng bé, ví dụ đếm lùi trước khi cùng chạy.",
+  lonHon: "Cho bé so hai nhóm đồ vật thật (kẹo, bút) rồi mới so số.",
+  beHon: "Cho bé so hai nhóm đồ vật thật (kẹo, bút) rồi mới so số.",
+  dienDau: "Nhắc mẹo miệng cá sấu: miệng há về phía số lớn hơn.",
+  cong: "Dùng que tính hoặc ngón tay, tập đếm tiếp từ số lớn thay vì đếm lại từ 1.",
+  tru: "Dùng đồ vật thật để bớt đi. Tập nghĩ ngược: 9 − 6 thì hỏi 6 cộng mấy bằng 9.",
+  congThieuSo: "Hỏi bé: mẹ có mấy cái kẹo, cho thêm 3 cái thì được 7 cái?",
+  truThieuSo: "Hỏi bé: có 9 cái kẹo, ăn mấy cái thì còn 6 cái?",
+  soSanhPhepTinh: "Nhắc bé tính kết quả trước rồi mới so sánh.",
+  banCua10: "Chơi trò tớ nói 3, cậu nói 7 vài phút mỗi ngày, dùng 10 ngón tay.",
+  gapDoi: "Tìm các cặp gấp đôi quanh nhà: 2 bàn tay có 10 ngón, 2 chiếc dép.",
+  giaDinhSo: "Lấy 3 lá bài tạo gia đình số, cùng bé viết đủ 4 phép tính.",
+  congQua10: "Vẽ tia số từ 0 đến 20 trên giấy để bé nhảy qua mốc 10.",
+  truQua10: "Vẽ tia số từ 0 đến 20, tập trừ về 10 trước rồi trừ tiếp.",
+  tachCong: "Dùng 2 khung 10 ô và hạt đậu để bé thấy cách lấp đầy 10.",
+  tachTru: "Dùng que tính bó chục để bé thấy cách trừ về 10."
+};
 
 /* =========================================================
    5. CHÚC MỪNG: cúp + hoa + pháo hoa
@@ -935,12 +1225,15 @@ function tinhThanhTich(p){
   });
   let sao = 0, gdQua = 0; const cup = { vang: 0, bac: 0, dong: 0 };
   for (let k = 1; k <= 4; k++){ const g = gd(p, k); if (g.daQua) gdQua++; if (g.cup) cup[g.cup]++; sao += tongSao(p, k); }
+  sao += tongSao(p, "tt");
   return {
     lanLam: ls.length, tongCau, tongDung, tongGiay, sao, gdQua, chuoi, chuoiDai, soNgay: ngaySet.size, cup,
     tyLe: tongCau ? Math.round(tongDung / tongCau * 100) : 0,
     diem10: ls.filter(x => x.loai === "bai" && x.diem === x.tong).length,
     quaRatKho: ls.some(x => x.loai === "bai" && x.lv === 4 && x.diem >= CONFIG.diemDatBai),
-    onHet: ls.some(x => x.loai === "on" && x.tong > 0 && x.diem === x.tong)
+    onHet: ls.some(x => x.loai === "on" && x.tong > 0 && x.diem === x.tong),
+    ttXong: ttXong(p),
+    tuLuc: ls.some(x => x.loai === "bai" && x.diem === x.tong && !x.goiY)
   };
 }
 const HUY_HIEU = [
@@ -954,6 +1247,8 @@ const HUY_HIEU = [
   ["🏆", "Cúp vàng đầu tiên", "Đạt 29–30 điểm bài kiểm tra", t => t.cup.vang >= 1],
   ["🔥", "Chinh phục Rất khó", "Đạt một bài ở mức Rất khó", t => t.quaRatKho],
   ["🛠️", "Sửa sai giỏi", "Ôn câu sai đúng hết một lượt", t => t.onHet],
+  ["🚀", "Vượt thử thách qua 10", "Hoàn thành chặng thử thách", t => t.ttXong],
+  ["🧠", "Tự lực", "Đúng hết một bài không dùng gợi ý", t => t.tuLuc],
   ["📅", "Chăm chỉ 3 ngày", "Học 3 ngày liên tiếp", t => t.chuoiDai >= 3],
   ["🗓️", "Chăm chỉ 7 ngày", "Học 7 ngày liên tiếp", t => t.chuoiDai >= 7],
   ["⭐", "500 câu đúng", "Trả lời đúng 500 câu", t => t.tongDung >= 500]
@@ -998,19 +1293,23 @@ function manHome(){
 function manMap(){
   roiQuiz(); manHT = "map";
   const p = hoSo();
-  const items = [1,2,3,4].map(k => {
-    const s = CONFIG.giaiDoan[k], mo = moGD(p, k), d = gd(p, k);
-    const tt = d.daQua ? `${d.cup ? cupSVG(d.cup) : ""}Đã qua ✓` : mo ? "Đang học" : "🔒 Chưa mở";
-    return `<li><button class="chang ${d.daQua ? "qua" : ""}" data-hd="moGD" data-k="${k}" ${mo ? "" : "disabled"} style="--c:${s.mau}">
-      <span class="tron">${k}</span>
-      <span><span class="ten">Giai đoạn ${k}</span><span class="pham-vi">Các số từ ${s.min} đến ${s.max}${mo ? `, ${tongSao(p, k)}/100 ★` : ""}</span></span>
+  const item = k => {
+    const s = cauHinhGD(k), mo = moGD(p, k), d = gd(p, k), laTT = k === "tt", xong = laTT ? ttXong(p) : d.daQua;
+    const tt = laTT ? (xong ? "Đã vượt ✓" : mo ? "Tùy chọn" : "🔒 Qua GĐ 2 để mở")
+                    : (d.daQua ? `${d.cup ? cupSVG(d.cup) : ""}Đã qua ✓` : mo ? "Đang học" : "🔒 Chưa mở");
+    const moTa = laTT ? "Cộng trừ có nhớ trong phạm vi 20" : `Các số từ ${s.min} đến ${s.max}`;
+    return `<li><button class="chang ${xong ? "qua" : ""} ${laTT ? "tuy-chon" : ""}" data-hd="moGD" data-k="${k}" ${mo ? "" : "disabled"} style="--c:${s.mau}">
+      <span class="tron">${laTT ? "⭐" : k}</span>
+      <span><span class="ten">${tenGD(k)}</span><span class="pham-vi">${moTa}${mo ? `, ${tongSao(p, k)}/${dsBai(k).length * 10} ★` : ""}</span></span>
       <span class="trang-thai">${tt}</span></button></li>`;
-  }).join("");
+  };
   app.innerHTML = `
     <div class="topbar"><button class="btn btn-nho an-khi-khoa" data-hd="veHome">← Đổi bé</button><button class="btn btn-chu an-khi-khoa" data-hd="phuHuynh">Dành cho phụ huynh</button></div>
     <h1>Chào ${esc(p.ten)}!</h1>
     <p class="phu">${gd(p, 4).daQua ? "Bé đã hoàn thành cả 4 giai đoạn. Giỏi quá!" : "Chọn chặng để học tiếp nhé."}</p>
-    <ol class="chang-list">${items}</ol>
+    <ol class="chang-list">${[1, 2, "tt", 3, 4].map(item).join("")}</ol>
+    <div class="kiem-tra tro-choi-the"><div><h2>🎮 Góc trò chơi</h2><p>Chớp số, Bạn của 10, Lật bài, Ếch nhảy tia số.</p></div>
+      <button class="btn btn-chinh" data-hd="troChoi">Vào chơi</button></div>
     ${p.cauSai.length ? `<div class="kiem-tra on-tap"><div><h2>Ôn lại câu sai</h2>
       <p>Có ${p.cauSai.length} câu bé từng làm sai. Ôn lại để nhớ lâu hơn nhé.</p></div>
       <button class="btn btn-chinh" data-hd="onCauSai">Ôn ngay</button></div>` : ""}`;
@@ -1018,62 +1317,125 @@ function manMap(){
 
 function manBai(k){
   roiQuiz(); manHT = "bai"; K = k;
-  const p = hoSo(), d = gd(p, k), s = CONFIG.giaiDoan[k], lv = p.doKho, sao = tongSao(p, k);
+  const p = hoSo(), d = gd(p, k), s = cauHinhGD(k), lv = p.doKho, sao = tongSao(p, k), laTT = k === "tt";
+  const soBai = dsBai(k).length, toiDa = soBai * 10;
   const chonDK = [1,2,3,4].map(l => { const x = CONFIG.doKho[l];
     return `<button class="pill" data-hd="chonDoKho" data-lv="${l}" aria-pressed="${l === lv}" style="--c:${x.mau};--t:${x.chu}">${x.ten}</button>`; }).join("");
-  const the = CONFIG.baiHoc.map((b, i) => {
+  const the = dsBai(k).map((b, i) => {
     const n = i + 1, mo = moBai(p, k, n), theoDK = d.diemDoKho[n] || {}, tot = d.diemBai[n];
     const cham = [1,2,3,4].map(l => `<i class="${(theoDK[l] || 0) >= CONFIG.diemDatBai ? "co" : ""}" style="--c:${CONFIG.doKho[l].mau}" title="${CONFIG.doKho[l].ten}"></i>`).join("");
     return `<button class="bai" data-hd="lamBai" data-n="${n}" ${mo ? "" : "disabled"}>
-      <span class="so">Bài ${n}${mo ? "" : " 🔒"}</span><span class="ten">${b.ten}</span>
+      <span class="so">Bài ${n}${mo ? "" : " 🔒"}</span><span class="ten">${tenBai(k, n)}</span>
       <span class="sao">${tot != null ? `★ ${tot}<small>/${CONFIG.soCauBai}</small>` : ""}</span>
       <span class="cham-dk" aria-hidden="true">${cham}</span></button>`;
   }).join("");
-  const moK = moKT(p, k), bai10 = (d.diemBai[10] || 0) >= CONFIG.diemDatBai;
-  const tot = d.kiemTra.length ? Math.max(...d.kiemTra.map(x => x.diem)) : null;
-  const viTriDat = Math.min(100, CONFIG.saoMoKiemTra);
-  let lyDo = "";
-  if (!moK) lyDo = !bai10 ? "Học xong bài 10 để mở bài kiểm tra." : `Cần trên ${CONFIG.saoMoKiemTra - 1} sao (bé đang có ${sao}). Làm lại các bài chưa được 10 sao nhé.`;
-  app.innerHTML = `
-    <div class="topbar"><button class="btn btn-nho" data-hd="veMap">← Các chặng</button><span class="nho">${esc(p.ten)}</span></div>
-    <h1>Giai đoạn ${k}</h1>
-    <p class="phu">Các số từ ${s.min} đến ${s.max}. Mỗi câu đúng được 1 sao. Đúng từ ${CONFIG.diemDatBai}/${CONFIG.soCauBai} câu sẽ mở bài tiếp theo.${CONFIG.thoiGianBai ? ` Mỗi câu có ${CONFIG.thoiGianBai} giây.` : ""}</p>
-    <div class="tong-sao"><span>Tổng sao: <b>${sao}</b>/100</span>
-      <div class="thanh" aria-hidden="true"><span style="width:${sao}%;background:${sao >= CONFIG.saoMoKiemTra ? "var(--leaf)" : "var(--sun)"}"></span><i class="vach-dat" style="left:${viTriDat}%"></i></div>
-      <span class="nho">Cần trên ${CONFIG.saoMoKiemTra - 1} sao để làm bài kiểm tra</span></div>
-    <div class="do-kho" role="group" aria-label="Chọn độ khó"><span class="nhan">Độ khó:</span>${chonDK}</div>
-    <p class="mo-ta-dk">${CONFIG.doKho[lv].moTa} Dấu chấm màu dưới mỗi bài cho biết bé đã đạt ở những mức nào. Sao tính theo lần làm tốt nhất.</p>
-    <div class="luoi-bai">${the}</div>
-    <div class="kiem-tra">
-      <div>
+  let cuoi;
+  if (laTT){
+    const xong = ttXong(p);
+    cuoi = `<div class="kiem-tra"><div><h2>${xong ? "🚀 Bé đã vượt thử thách!" : "Vượt thử thách"}</h2>
+      <p>${xong ? `Bé đã hoàn thành cả ${soBai} bài cộng trừ qua 10.` : `Đạt từ ${CONFIG.diemDatBai}/${CONFIG.soCauBai} ở cả ${soBai} bài để nhận huy hiệu 🚀.`}</p>
+      <p class="nho">Chặng này không bắt buộc. Bé vẫn lên giai đoạn 3 bình thường.</p></div></div>`;
+  } else {
+    const moK = moKT(p, k), bai10 = !!d.qua[10];
+    const tot = d.kiemTra.length ? Math.max(...d.kiemTra.map(x => x.diem)) : null;
+    let lyDo = "";
+    if (!moK) lyDo = !bai10 ? "Học xong bài 10 để mở bài kiểm tra." : `Cần trên ${CONFIG.saoMoKiemTra - 1} sao (bé đang có ${sao}). Làm lại các bài chưa được 10 sao nhé.`;
+    cuoi = `<div class="kiem-tra"><div>
         <h2>Bài kiểm tra lên chặng</h2>
         <p>${CONFIG.soCauKiemTra} câu, mỗi câu ${CONFIG.thoiGianKiemTra} giây, mức ${theDK(p.doKhoKiemTra)}. Đúng từ ${CONFIG.diemDatKiemTra} câu để ${k < 4 ? `lên giai đoạn ${k + 1}` : "hoàn thành chương trình"}.</p>
-        <p class="nho">29–30 điểm: cúp vàng. 27–28: cúp bạc. 25–26: cúp đồng.</p>
+        <p class="nho">29–30 điểm: cúp vàng. 27–28: cúp bạc. 25–26: cúp đồng. Bài kiểm tra không có gợi ý.</p>
         ${tot != null ? `<p class="nho">Lần tốt nhất: ${tot}/${CONFIG.soCauKiemTra}${d.cup ? `, ${CUP[d.cup].ten}` : ""}</p>` : ""}
         ${lyDo ? `<p class="nho"><b>${lyDo}</b></p>` : ""}
       </div>
-      <button class="btn btn-chinh" data-hd="lamKT" ${moK ? "" : "disabled"}>Làm bài kiểm tra</button>
-    </div>`;
+      <button class="btn btn-chinh" data-hd="lamKT" ${moK ? "" : "disabled"}>Làm bài kiểm tra</button></div>`;
+  }
+  app.innerHTML = `
+    <div class="topbar"><button class="btn btn-nho" data-hd="veMap">← Các chặng</button><span class="nho">${esc(p.ten)}</span></div>
+    <h1>${tenGD(k)}</h1>
+    <p class="phu">${laTT ? "Cộng trừ có nhớ trong phạm vi 20, dùng mẹo ghép 10 và trừ về 10." : `Các số từ ${s.min} đến ${s.max}.`} Mỗi câu đúng được 1 sao, câu dùng gợi ý không được sao. Đúng từ ${CONFIG.diemDatBai}/${CONFIG.soCauBai} câu sẽ mở bài tiếp theo.${CONFIG.thoiGianBai ? ` Mỗi câu có ${CONFIG.thoiGianBai} giây.` : ""}</p>
+    <div class="tong-sao"><span>Tổng sao: <b>${sao}</b>/${toiDa}</span>
+      <div class="thanh" aria-hidden="true"><span style="width:${sao / toiDa * 100}%;background:${laTT || sao >= CONFIG.saoMoKiemTra ? "var(--leaf)" : "var(--sun)"}"></span>${laTT ? "" : `<i class="vach-dat" style="left:${Math.min(100, CONFIG.saoMoKiemTra)}%"></i>`}</div>
+      ${laTT ? "" : `<span class="nho">Cần trên ${CONFIG.saoMoKiemTra - 1} sao để làm bài kiểm tra</span>`}</div>
+    <div class="do-kho" role="group" aria-label="Chọn độ khó"><span class="nhan">Độ khó:</span>${chonDK}</div>
+    <p class="mo-ta-dk">${CONFIG.doKho[lv].moTa} Dấu chấm màu dưới mỗi bài cho biết bé đã đạt ở những mức nào. <button class="btn btn-chu" data-hd="xemMeo">📖 Xem lại mẹo các bài</button></p>
+    <div class="luoi-bai">${the}</div>
+    ${cuoi}`;
+}
+
+function manTheMeo(k, n){
+  roiQuiz(); manHT = "meo";
+  const m = noiDungMeo(k, n);
+  app.innerHTML = `
+    <div class="topbar"><button class="btn btn-nho" data-hd="moGD" data-k="${k}">← Danh sách bài</button><span class="nho">${tenGD(k)}</span></div>
+    <section class="the-meo">
+      <p class="nho">Mẹo của bài ${n}</p><h1>💡 ${tenBai(k, n)}</h1>
+      <ul>${m.y.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      ${m.hinh ? `<div class="hinh-meo">${m.hinh}</div>` : ""}
+      <div class="nut-hang"><button class="btn btn-chinh" data-hd="batDauBai" data-n="${n}">Bắt đầu làm bài</button>
+        <button class="btn" data-hd="docMeo" data-n="${n}">🔊 Nghe mẹo</button></div>
+    </section>`;
+  if (DB.caiDat.tuDoc) noi(m.y.join(". "));
+}
+function manDsMeo(k){
+  roiQuiz(); manHT = "dsmeo";
+  app.innerHTML = `
+    <div class="topbar"><button class="btn btn-nho" data-hd="moGD" data-k="${k}">← Danh sách bài</button><span class="nho">${tenGD(k)}</span></div>
+    <h1>📖 Mẹo các bài</h1>
+    ${dsBai(k).map((b, i) => { const m = noiDungMeo(k, i + 1);
+      return `<section class="the-meo nho-gon"><h2>Bài ${i + 1}: ${tenBai(k, i + 1)}</h2><ul>${m.y.map(x => `<li>${esc(x)}</li>`).join("")}</ul>${m.hinh ? `<div class="hinh-meo">${m.hinh}</div>` : ""}</section>`; }).join("")}`;
+}
+function moBaiHoc(k, n){
+  const p = hoSo(), khoa = `${k}-${n}`, che = DB.caiDat.theMeo;
+  if (che === "luon" || (che === "lanDau" && !p.daXemMeo[khoa])){ p.daXemMeo[khoa] = true; luu(); manTheMeo(k, n); }
+  else batDau(k, n);
 }
 
 function batDau(k, n){
-  const p = hoSo(), s = CONFIG.giaiDoan[k], lv = n ? p.doKho : p.doKhoKiemTra;
-  const cau = taoBo(n ? dangChoBai(n - 1) : dangKiemTra(), s, lv, p.ganDay);
+  const p = hoSo(), s = cauHinhGD(k), lv = n ? p.doKho : p.doKhoKiemTra;
+  const cau = taoBo(n ? dangChoBai(k, n - 1) : dangKiemTra(), s, lv, p.ganDay);
   p.ganDay.push(...cau.map(q => vanCau(q).khoa));
   if (p.ganDay.length > CONFIG.nhoCauGanDay) p.ganDay.splice(0, p.ganDay.length - CONFIG.nhoCauGanDay);
   luu();
   loiNgheNang = false;
-  Q = { loai: n ? "bai" : "kiemtra", k, n, lv, cau, i: 0, dung: 0, daTraLoi: false, sai: [], batDau: Date.now() };
+  Q = { loai: n ? "bai" : "kiemtra", k, n, lv, cau, i: 0, dung: 0, sao: 0, goiY: {}, daTraLoi: false, sai: [], batDau: Date.now() };
   manQuiz();
 }
 function batDauOn(dsCau, tuPH){
   if (!dsCau.length){ toast("Không có câu nào để ôn."); return; }
   loiNgheNang = false;
-  Q = { loai: "on", k: null, n: 0, lv: null, cau: dsCau, i: 0, dung: 0, daTraLoi: false, sai: [], batDau: Date.now(), tuPhuHuynh: !!tuPH };
+  Q = { loai: "on", k: null, n: 0, lv: null, cau: dsCau, i: 0, dung: 0, sao: 0, goiY: {}, daTraLoi: false, sai: [], batDau: Date.now(), tuPhuHuynh: !!tuPH };
   manQuiz();
 }
 const cauDeOn = (x, k, lv) => Object.assign(chepCau(x), { luaChon: shuffle(x.luaChon || []), _k: k, _lv: lv });
 function cauTuNganHang(p){ return shuffle(p.cauSai).slice(0, CONFIG.soCauOn).map(x => cauDeOn(x.q, x.k, x.lv)); }
+
+// Góc trò chơi
+function giayChoiHomNay(p){ return p.choi && p.choi.ngay === khoaNgay(new Date()) ? p.choi.giay : 0; }
+function hetGioChoi(p){ const gh = Number(DB.caiDat.gioiHanChoi) || 0; return gh > 0 && giayChoiHomNay(p) >= gh * 60; }
+function themGioChoi(p, giay){ const h = khoaNgay(new Date()); if (!p.choi || p.choi.ngay !== h) p.choi = { ngay: h, giay: 0 }; p.choi.giay += giay; }
+function manTroChoi(){
+  roiQuiz(); manHT = "trochoi";
+  const p = hoSo(), gh = Number(DB.caiDat.gioiHanChoi) || 0, da = giayChoiHomNay(p), het = hetGioChoi(p);
+  app.innerHTML = `
+    <div class="topbar"><button class="btn btn-nho" data-hd="veMap">← Các chặng</button><span class="nho">${esc(p.ten)}</span></div>
+    <h1>🎮 Góc trò chơi</h1>
+    <p class="phu">Chơi cho vui, không tính vào sao hay cúp.${gh ? ` Hôm nay bé đã chơi ${Math.floor(da / 60)}/${gh} phút.` : ""}</p>
+    ${het ? `<div class="kiem-tra on-tap" style="margin:0 0 18px"><div><h2>Hôm nay chơi đủ rồi!</h2><p>Mai mình chơi tiếp nhé. Bé có thể quay lại học bài.</p></div></div>` : ""}
+    <div class="luoi-tro">${Object.entries(CONFIG.troChoi).map(([id, g]) => { const r = p.troChoi[id];
+      return `<button class="the-tro" data-hd="choi" data-id="${id}" ${het ? "disabled" : ""}><span class="bt" aria-hidden="true">${g.bieuTuong}</span><span class="ten">${g.ten}</span>
+        <span class="nho">${g.moTa}</span><span class="nho"><b>${r ? `Kỷ lục: ${r.tot}/${g.soCau}` : "Chưa chơi"}</b></span></button>`; }).join("")}</div>`;
+}
+function batDauChoi(id){
+  const p = hoSo(), g = CONFIG.troChoi[id];
+  if (hetGioChoi(p)){ toast("Hôm nay bé chơi đủ rồi, mai chơi tiếp nhé!"); manTroChoi(); return; }
+  let s = cauHinhGD(gdHienTai(p)), ds;
+  if (id === "chopSo") ds = Array.from({ length: g.soCau }, (_, i) => i % 2 ? "tru" : "cong");
+  else if (id === "ban10"){ ds = Array(g.soCau).fill("banCua10"); s = CONFIG.giaiDoan[1]; }
+  else ds = Array(g.soCau).fill(id === "latBai" ? "latBai" : "tiaSo");
+  loiNgheNang = false;
+  Q = { loai: "choi", tro: id, k: null, n: 0, lv: null, cau: taoBo(ds, s, 2), i: 0, dung: 0, sao: 0, goiY: {}, daTraLoi: false, sai: [], batDau: Date.now(), tg: g.giay };
+  manQuiz();
+}
 
 const banPhimHTML = () => `<div class="ban-phim">
   ${[1,2,3,4,5,6,7,8,9].map(d => `<button data-hd="so" data-d="${d}">${d}</button>`).join("")}
@@ -1083,12 +1445,14 @@ const banPhimHTML = () => `<div class="ban-phim">
 function manQuiz(){
   dungDongHo(); dungNghe(); manHT = "quiz";
   const c = Q.cau[Q.i], tong = Q.cau.length, tg = thoiGianCau();
-  const tieuDe = Q.loai === "bai" ? `Bài ${Q.n}: ${CONFIG.baiHoc[Q.n - 1].ten}` : Q.loai === "kiemtra" ? "Bài kiểm tra lên chặng" : "Ôn lại câu sai";
+  const tieuDe = Q.loai === "bai" ? `Bài ${Q.n}: ${tenBai(Q.k, Q.n)}` : Q.loai === "kiemtra" ? "Bài kiểm tra lên chặng"
+               : Q.loai === "choi" ? `${CONFIG.troChoi[Q.tro].bieuTuong} ${CONFIG.troChoi[Q.tro].ten}` : "Ôn lại câu sai";
   const coMic = DB.caiDat.traLoiGiong && LopNghe;
+  const coGoiY = DB.caiDat.goiY && (Q.loai === "bai" || Q.loai === "on");
   Q.nhap = "";
   app.innerHTML = `<div class="quiz">
     <div class="topbar"><button class="btn btn-nho an-khi-khoa" data-hd="thoatQuiz">✕ Dừng</button>
-      <span class="nho">${Q.k ? `Giai đoạn ${Q.k}, ` : ""}${tieuDe} ${Q.lv ? theDK(Q.lv) : ""}</span></div>
+      <span class="nho">${Q.k ? `${tenGD(Q.k)}, ` : ""}${tieuDe} ${Q.lv ? theDK(Q.lv) : ""}</span></div>
     <div class="tien-do">
       <span>Câu ${Q.i + 1}/${tong}</span>
       <div class="thanh" role="progressbar" aria-valuemin="0" aria-valuemax="${tong}" aria-valuenow="${Q.i}"><span style="width:${Q.i / tong * 100}%"></span></div>
@@ -1097,9 +1461,12 @@ function manQuiz(){
     ${tg ? `<div class="dong-ho cho" id="dongHo"><span aria-hidden="true">⏱</span><div class="khung"><span class="vach"></span></div><span class="so-giay">${tg}s</span></div>` : ""}
     <div class="quiz-khung">
       <div class="cau">
+        ${coGoiY ? `<button class="btn btn-nho nut-goi-y" data-hd="goiY" aria-label="Xem gợi ý">💡 Gợi ý</button>` : ""}
         <button class="btn btn-nho nut-doc" data-hd="docCau" aria-label="Đọc câu hỏi">🔊 Đọc</button>
         <p class="de">${c.de}</p>
+        ${c.hinh ? `<div class="hinh-cau">${c.hinh}</div>` : ""}
         ${c.bieu ? `<p class="bieu-thuc">${c.bieu}</p>` : ""}
+        <div id="hopGoiY"></div>
       </div>
       <div>
         ${c.nhapSo ? banPhimHTML() : `<div class="dap-an ${c.luaChon.length === 3 ? "ba" : ""}">
@@ -1110,9 +1477,18 @@ function manQuiz(){
     <div class="goi-y" id="goiY" aria-live="polite"></div></div>`;
   khoiDongCau();
 }
+function hienGoiY(){
+  if (!Q || Q.daTraLoi || Q.goiY[Q.i]) return;
+  const g = goiY(Q.cau[Q.i]);
+  Q.goiY[Q.i] = true;
+  const hop = document.getElementById("hopGoiY");
+  if (hop) hop.innerHTML = `<div class="goi-y-hop">💡 ${esc(g.t)}${g.h ? `<div class="hinh-cau">${g.h}</div>` : ""}</div><p class="nho" style="margin:4px 0 0">Câu dùng gợi ý vẫn tính đúng nhưng không được sao.</p>`;
+  const nut = app.querySelector(".nut-goi-y"); if (nut) nut.disabled = true;
+  if (DB.caiDat.tuDoc) noi(g.t);
+}
 
 function capNhatNhap(){
-  const o = app.querySelector(".cau .o"); if (o) o.textContent = Q.nhap || "?";
+  app.querySelectorAll(".cau .o").forEach(o => o.textContent = Q.nhap || "?");
   const x = app.querySelector(".ban-phim .xong"); if (x) x.disabled = !Q.nhap;
 }
 function goSo(d){ if (!Q || Q.daTraLoi || Q.nhap.length >= 3) return; Q.nhap = (Q.nhap === "0" ? "" : Q.nhap) + d; capNhatNhap(); }
@@ -1122,34 +1498,34 @@ function nopSo(){ if (Q && !Q.daTraLoi && Q.nhap) xuLyTraLoi(String(parseInt(Q.n
 function xuLyTraLoi(v){
   if (!Q || Q.daTraLoi) return;
   Q.daTraLoi = true; dungDongHo(); dungNghe();
-  const p = hoSo(), c = Q.cau[Q.i], dung = v !== null && v === c.dapAn;
-  app.querySelectorAll(".lua-chon, .ban-phim button, #nutMic").forEach(b => b.disabled = true);
+  const p = hoSo(), c = Q.cau[Q.i], dung = v !== null && v === c.dapAn, choi = Q.loai === "choi";
+  app.querySelectorAll(".lua-chon, .ban-phim button, #nutMic, .nut-goi-y").forEach(b => b.disabled = true);
   const nut = [...app.querySelectorAll(".lua-chon")];
   if (nut.length){
     nut[c.luaChon.indexOf(c.dapAn)].classList.add("dung");
     if (!dung && v !== null){ const j = c.luaChon.indexOf(v); if (j >= 0) nut[j].classList.add("sai"); }
   }
-  const o = app.querySelector(".cau .o");
-  if (o){ o.textContent = c.dapAn; o.classList.add("da-dien"); }
-  const tk = p.thongKeDang[c.dang] = p.thongKeDang[c.dang] || { dung: 0, tong: 0 };
-  tk.tong++; if (dung) tk.dung++;
-  const goiY = document.getElementById("goiY");
+  app.querySelectorAll(".cau .o").forEach(o => { o.textContent = c.dapAn; o.classList.add("da-dien"); });
+  if (!choi){ const tk = p.thongKeDang[c.dang] = p.thongKeDang[c.dang] || { dung: 0, tong: 0 }; tk.tong++; if (dung) tk.dung++; }
+  const vung = document.getElementById("goiY");
   if (dung){
-    Q.dung++; phat(true);
+    Q.dung++; if (!Q.goiY[Q.i]) Q.sao++;
+    phat(true);
     if (Q.loai === "on") xoaCauSai(p, c);
     const loi = pick(["Đúng rồi!", "Giỏi quá!", "Chính xác!", "Tuyệt vời!", "Bé giỏi lắm!"]);
-    goiY.textContent = loi;
+    vung.textContent = loi;
     if (DB.caiDat.tuDoc) noi(loi);
     const cu = Q, i = Q.i;
     setTimeout(() => { if (Q === cu && cu.i === i) tiep(); }, 1300);
   } else {
     phat(false);
     Q.sai.push(Object.assign(chepCau(c), { chon: v }));
-    if (Q.loai === "on") themCauSai(p, c, c._k, c._lv); else themCauSai(p, c, Q.k, Q.lv);
+    if (Q.loai === "on") themCauSai(p, c, c._k, c._lv); else if (!choi) themCauSai(p, c, Q.k, Q.lv);
     const dau = v === null ? "Hết giờ!" : c.nhapSo ? `Bé trả lời ${esc(v)}.` : "Chưa đúng.";
-    goiY.innerHTML = `${dau} Đáp án là <b>${esc(c.dapAn)}</b>.<br><button class="btn btn-chinh" data-hd="tiep">Câu tiếp theo</button>`;
+    const g = DB.caiDat.goiY && (Q.loai === "bai" || Q.loai === "on") ? goiY(c) : null;
+    vung.innerHTML = `${dau} Đáp án là <b>${esc(c.dapAn)}</b>.${g ? `<div class="goi-y-hop">💡 Mẹo: ${esc(g.t)}</div>` : "<br>"}<button class="btn btn-chinh" data-hd="tiep">Câu tiếp theo</button>`;
     if (DB.caiDat.tuDoc) noi(`${v === null ? "Hết giờ. " : ""}Đáp án là ${docDapAn(c.dapAn)}`);
-    goiY.querySelector("button").focus();
+    vung.querySelector("button").focus();
   }
   luu();
 }
@@ -1161,32 +1537,36 @@ function tiep(){
 }
 
 function ketThuc(){
+  if (Q.loai === "choi") return ketThucChoi();
   dungDongHo(); huyDoc(); dungNghe(); manHT = "ketqua";
-  const p = hoSo(), tong = Q.cau.length, diem = Q.dung, { k, n, lv, loai } = Q;
+  const p = hoSo(), tong = Q.cau.length, diem = Q.dung, saoLuot = Q.sao, soGoiY = Object.keys(Q.goiY).length, { k, n, lv, loai } = Q;
   const giay = Math.round((Date.now() - Q.batDau) / 1000);
-  const ls = { id: "ls" + Date.now(), ngay: new Date().toISOString(), loai, k, n, lv, diem, tong, giay, sai: Q.sai };
+  const ls = { id: "ls" + Date.now(), ngay: new Date().toISOString(), loai, k, n, lv, diem, tong, giay, sao: saoLuot, goiY: soGoiY, sai: Q.sai };
+  if (loai === "bai") ls.tenBai = tenBai(k, n);
   p.lichSu.push(ls);
   if (p.lichSu.length > 500) p.lichSu.splice(0, p.lichSu.length - 500);
   let tieuDe, loi, nut = "", them = "", camOn = null;
   if (loai === "bai"){
-    const d = gd(p, k);
-    if (d.diemBai[n] == null || diem > d.diemBai[n]) d.diemBai[n] = diem;
+    const d = gd(p, k), soBai = dsBai(k).length, laTT = k === "tt";
+    if (d.diemBai[n] == null || saoLuot > d.diemBai[n]) d.diemBai[n] = saoLuot;
     d.diemDoKho[n] = d.diemDoKho[n] || {};
     if (d.diemDoKho[n][lv] == null || diem > d.diemDoKho[n][lv]) d.diemDoKho[n][lv] = diem;
+    if (diem >= CONFIG.diemDatBai) d.qua[n] = true;
     const sao = tongSao(p, k);
-    them = `<div class="sao-to">★ ${diem}</div>`;
+    them = `<div class="sao-to">★ ${saoLuot}</div>${soGoiY ? `<p class="nho">${soGoiY} câu dùng gợi ý nên không được sao.</p>` : ""}`;
     if (diem >= CONFIG.diemDatBai){
       tieuDe = `Hoàn thành bài ${n}!`;
-      loi = (n < 10 ? `Bài ${n + 1} đã mở. ` : "") + `Tổng sao giai đoạn ${k}: ${sao}/100.` +
-            (n === 10 || (d.diemBai[10] || 0) >= CONFIG.diemDatBai ? (sao >= CONFIG.saoMoKiemTra ? " Bé đã đủ sao để làm bài kiểm tra!" : ` Cần trên ${CONFIG.saoMoKiemTra - 1} sao để làm bài kiểm tra.`) : "");
-      nut = n < 10 ? `<button class="btn btn-chinh" data-hd="lamBai" data-n="${n + 1}">Học bài ${n + 1}</button>`
-                   : (moKT(p, k) ? `<button class="btn btn-chinh" data-hd="lamKT">Làm bài kiểm tra</button>` : "");
+      loi = (n < soBai ? `Bài ${n + 1} đã mở. ` : "") + `Tổng sao: ${sao}/${soBai * 10}.`;
+      if (!laTT && d.qua[10]) loi += sao >= CONFIG.saoMoKiemTra ? " Bé đã đủ sao để làm bài kiểm tra!" : ` Cần trên ${CONFIG.saoMoKiemTra - 1} sao để làm bài kiểm tra.`;
+      if (laTT && ttXong(p)) loi += " Bé đã vượt thử thách qua 10!";
+      nut = n < soBai ? `<button class="btn btn-chinh" data-hd="lamBai" data-n="${n + 1}">Học bài ${n + 1}</button>`
+                      : (!laTT && moKT(p, k) ? `<button class="btn btn-chinh" data-hd="lamKT">Làm bài kiểm tra</button>` : "");
       if (lv < 4) nut += `<button class="btn" data-hd="thuKhoHon" data-n="${n}" data-lv="${lv + 1}">Thử mức ${CONFIG.doKho[lv + 1].ten}</button>`;
-      nut += `<button class="btn" data-hd="lamBai" data-n="${n}">Làm lại</button>`;
+      nut += `<button class="btn" data-hd="batDauBai" data-n="${n}">Làm lại</button>`;
     } else {
       tieuDe = "Gần được rồi!";
-      loi = `Bé cần đúng ${CONFIG.diemDatBai} câu. Làm lại nhé.${lv > 1 ? ` Bé cũng có thể thử mức ${CONFIG.doKho[lv - 1].ten}.` : ""}`;
-      nut = `<button class="btn btn-chinh" data-hd="lamBai" data-n="${n}">Làm lại</button>`;
+      loi = `Bé cần đúng ${CONFIG.diemDatBai} câu. Làm lại nhé, có thể bấm 💡 Gợi ý khi cần.${lv > 1 ? ` Bé cũng có thể thử mức ${CONFIG.doKho[lv - 1].ten}.` : ""}`;
+      nut = `<button class="btn btn-chinh" data-hd="batDauBai" data-n="${n}">Làm lại</button><button class="btn" data-hd="docMeoBai" data-n="${n}">💡 Xem mẹo</button>`;
       if (lv > 1) nut += `<button class="btn" data-hd="thuKhoHon" data-n="${n}" data-lv="${lv - 1}">Làm ở mức ${CONFIG.doKho[lv - 1].ten}</button>`;
     }
   } else if (loai === "kiemtra"){
@@ -1199,6 +1579,7 @@ function ketThuc(){
       if (!d.cup || HANG_CUP[c] > HANG_CUP[d.cup]) d.cup = c;
       tieuDe = k < 4 ? `Bé đã lên giai đoạn ${k + 1}!` : "Bé đã hoàn thành cả 4 giai đoạn!";
       loi = `Bé đạt ${CUP[c].ten}. ` + (k < 4 ? `Giai đoạn ${k + 1} học các số từ ${CONFIG.giaiDoan[k + 1].min} đến ${CONFIG.giaiDoan[k + 1].max}.` : "Chúc mừng bé, giỏi quá!");
+      if (k === 2) loi += " Chặng Thử thách qua 10 cũng đã mở.";
       them = cupSVG(c);
       nut = k < 4 ? `<button class="btn btn-chinh" data-hd="moGD" data-k="${k + 1}">Sang giai đoạn ${k + 1}</button>` : `<button class="btn btn-chinh" data-hd="veMap">Về các chặng</button>`;
       camOn = { hinh: cupSVG(c, diem), tieuDe: `${CUP[c].ten}!`,
@@ -1223,7 +1604,7 @@ function ketThuc(){
     ? (tuPH && !DB.khoa ? `<button class="btn" data-hd="vePH">Về trang phụ huynh</button>` : `<button class="btn" data-hd="veMap">Về các chặng</button>`)
     : `<button class="btn" data-hd="moGD" data-k="${k}">Danh sách bài</button>`;
   app.innerHTML = `
-    <div class="topbar"><span></span><span class="nho">${esc(p.ten)}${k ? `, giai đoạn ${k}` : ""} ${lv ? theDK(lv) : ""}</span></div>
+    <div class="topbar"><span></span><span class="nho">${esc(p.ten)}${k ? `, ${tenGD(k)}` : ""} ${lv ? theDK(lv) : ""}</span></div>
     <section class="ket-qua">
       <h1>${tieuDe}</h1>
       <div class="diem-khung" aria-label="Đúng ${diem} trên ${tong} câu"><span class="diem">${diem}</span><span class="tren">/${tong}</span></div>
@@ -1238,6 +1619,24 @@ function ketThuc(){
   if (camOn) chucMung(camOn);
   huyMoi.forEach(([bh, ten, mt]) => chucMung({ hinh: `<span class="bh-to">${bh}</span>`, tieuDe: `Chúc mừng bé đạt huy hiệu "${ten}"!`, phu: mt, doc: `Chúc mừng bé đạt huy hiệu ${ten}` }));
 }
+function ketThucChoi(){
+  dungDongHo(); huyDoc(); dungNghe(); manHT = "ketqua";
+  const p = hoSo(), id = Q.tro, g = CONFIG.troChoi[id], diem = Q.dung, tong = Q.cau.length;
+  themGioChoi(p, Math.round((Date.now() - Q.batDau) / 1000));
+  const cu = p.troChoi[id] || { tot: 0, lan: 0 }, kyLuc = diem > cu.tot;
+  p.troChoi[id] = { tot: Math.max(cu.tot, diem), lan: cu.lan + 1 };
+  luu(); Q = null;
+  app.innerHTML = `
+    <div class="topbar"><span></span><span class="nho">${esc(p.ten)}</span></div>
+    <section class="ket-qua">
+      <h1>${g.bieuTuong} ${g.ten}</h1>
+      <div class="diem-khung" aria-label="Đúng ${diem} trên ${tong} câu"><span class="diem">${diem}</span><span class="tren">/${tong}</span></div>
+      <p class="sao-to" style="font-size:30px">${kyLuc ? "Kỷ lục mới!" : `Kỷ lục: ${p.troChoi[id].tot}/${tong}`}</p>
+      <div class="nut-hang">${hetGioChoi(p) ? "" : `<button class="btn btn-chinh" data-hd="choi" data-id="${id}">Chơi lại</button>`}<button class="btn" data-hd="troChoi">Góc trò chơi</button><button class="btn" data-hd="veMap">Về các chặng</button></div>
+      ${hetGioChoi(p) ? `<p>Hôm nay bé chơi đủ rồi, mai chơi tiếp nhé!</p>` : ""}
+    </section>`;
+  if (kyLuc && diem === tong) chucMung({ hinh: `<span class="bh-to">${g.bieuTuong}</span>`, tieuDe: `Kỷ lục ${g.ten}: ${diem}/${tong}!`, phu: "Bé đúng hết, giỏi quá!", doc: `Chúc mừng bé đạt kỷ lục ${g.ten}` });
+}
 
 /* =========================================================
    8. KHU VỰC PHỤ HUYNH
@@ -1248,16 +1647,16 @@ function vaoPhuHuynh(){ hoiPhuHuynh(() => { PH.soDong = 30; manPhuHuynh(); }); }
 function tabThanhTich(p){
   const t = tinhThanhTich(p);
   const oSo = [[t.lanLam, "lượt làm bài"], [t.tongCau, "câu đã trả lời"], [t.tyLe + "%", "trả lời đúng"], [dinhDangGio(t.tongGiay), "thời gian học"],
-               [t.sao + " ★", "tổng sao (tối đa 400)"], [t.gdQua + "/4", "giai đoạn đã qua"], [`${t.cup.vang} · ${t.cup.bac} · ${t.cup.dong}`, "cúp vàng · bạc · đồng"],
+               [t.sao + " ★", "tổng sao (tối đa 460)"], [t.gdQua + "/4", "giai đoạn đã qua"], [`${t.cup.vang} · ${t.cup.bac} · ${t.cup.dong}`, "cúp vàng · bạc · đồng"],
                [t.soNgay, "ngày đã học"], [t.chuoi + " ngày", "chuỗi học liên tiếp"]]
     .map(([a, b]) => `<div><b>${a}</b><span>${b}</span></div>`).join("");
-  const bang = [1,2,3,4].map(k => {
-    const g = gd(p, k);
-    const baiQua = Object.values(g.diemBai).filter(x => x >= CONFIG.diemDatBai).length;
+  const bang = [1,2,3,4,"tt"].map(k => {
+    const g = gd(p, k), laTT = k === "tt", nb = dsBai(k).length;
+    const baiQua = Object.keys(g.qua).filter(n => g.qua[n]).length;
     const ratKho = Object.values(g.diemDoKho).filter(x => (x[4] || 0) >= CONFIG.diemDatBai).length;
     const tot = g.kiemTra.length ? Math.max(...g.kiemTra.map(x => x.diem)) : "–";
-    const tt = g.daQua ? "Đã qua" : moGD(p, k) ? "Đang học" : "Chưa mở";
-    return `<tr><td>Giai đoạn ${k}</td><td>${baiQua}/10</td><td>${tongSao(p, k)}/100</td><td>${ratKho}/10</td><td>${g.kiemTra.length}</td><td>${tot}</td><td>${g.cup ? CUP[g.cup].ten : "–"}</td><td>${tt}</td></tr>`;
+    const tt = laTT ? (ttXong(p) ? "Đã vượt" : moGD(p, k) ? "Tùy chọn" : "Chưa mở") : (g.daQua ? "Đã qua" : moGD(p, k) ? "Đang học" : "Chưa mở");
+    return `<tr><td>${tenGD(k)}</td><td>${baiQua}/${nb}</td><td>${tongSao(p, k)}/${nb * 10}</td><td>${ratKho}/${nb}</td><td>${laTT ? "–" : g.kiemTra.length}</td><td>${laTT ? "–" : tot}</td><td>${g.cup ? CUP[g.cup].ten : "–"}</td><td>${tt}</td></tr>`;
   }).join("");
   const cot = Object.keys(TEN_DANG).map(dg => {
     const x = p.thongKeDang[dg];
@@ -1286,8 +1685,8 @@ function tabThanhTich(p){
 }
 
 function nhanLuot(x){
-  if (x.loai === "bai") return `Giai đoạn ${x.k}, bài ${x.n}: ${CONFIG.baiHoc[x.n - 1].ten}`;
-  if (x.loai === "kiemtra") return `Giai đoạn ${x.k}, kiểm tra lên chặng${x.cup ? ` (${CUP[x.cup].ten})` : ""}`;
+  if (x.loai === "bai") return `${tenGD(x.k)}, bài ${x.n}: ${x.tenBai || tenBai(x.k, x.n)}`;
+  if (x.loai === "kiemtra") return `${tenGD(x.k)}, kiểm tra lên chặng${x.cup ? ` (${CUP[x.cup].ten})` : ""}`;
   return "Ôn câu sai";
 }
 function datLuot(x){ return x.loai === "bai" ? x.diem >= CONFIG.diemDatBai : x.loai === "kiemtra" ? x.diem >= CONFIG.diemDatKiemTra : x.diem === x.tong; }
@@ -1300,7 +1699,7 @@ function tabLichSu(p){
   const dong = hien.map(x => `
     <details class="dong-ls"><summary>
       <b>${ngayGio(x.ngay)}</b><span>${nhanLuot(x)}</span>${x.lv ? theDK(x.lv) : ""}
-      <span class="${datLuot(x) ? "dat" : "chua-dat"}">${x.diem}/${x.tong}</span><span class="nho">${dinhDangGio(x.giay)}</span>
+      <span class="${datLuot(x) ? "dat" : "chua-dat"}">${x.diem}/${x.tong}</span>${x.loai === "bai" && x.sao != null ? `<span class="nho">★ ${x.sao}${x.goiY ? `, ${x.goiY} gợi ý` : ""}</span>` : ""}<span class="nho">${dinhDangGio(x.giay)}</span>
     </summary><div class="ct">
       ${x.sai.length ? `<p>Câu trả lời sai (${x.sai.length}):</p><ul>${x.sai.map(c => `<li>${moTaCau(c)}. ${c.chon === null ? "Hết giờ" : `Bé chọn <b>${esc(c.chon)}</b>`}, đáp án <b>${esc(c.dapAn)}</b>.</li>`).join("")}</ul>
         <button class="btn btn-nho" data-hd="onTuLuot" data-id="${x.id}">Cho bé làm lại các câu sai này</button>` : `<p>Không có câu sai.</p>`}
@@ -1309,7 +1708,7 @@ function tabLichSu(p){
   return `
     <section class="khoi"><h2>Lịch sử làm bài</h2>
       <div class="loc">
-        <label>Giai đoạn <select id="locGD"><option value="0">Tất cả</option>${[1,2,3,4].map(k => `<option value="${k}" ${PH.locGD === String(k) ? "selected" : ""}>Giai đoạn ${k}</option>`).join("")}</select></label>
+        <label>Giai đoạn <select id="locGD"><option value="0">Tất cả</option>${[1,2,3,4].map(k => `<option value="${k}" ${PH.locGD === String(k) ? "selected" : ""}>Giai đoạn ${k}</option>`).join("")}<option value="tt" ${PH.locGD === "tt" ? "selected" : ""}>Thử thách qua 10</option></select></label>
         <label>Loại <select id="locLoai">${[["tatca","Tất cả"],["bai","Bài tập"],["kiemtra","Kiểm tra lên chặng"],["on","Ôn câu sai"]].map(([v, t]) => `<option value="${v}" ${PH.locLoai === v ? "selected" : ""}>${t}</option>`).join("")}</select></label>
       </div>
       <p class="nho">Hiển thị ${hien.length}/${ls.length} lượt. Bấm vào một lượt để xem các câu bé trả lời sai.</p>
@@ -1331,7 +1730,7 @@ function tabCauSai(p){
         <div class="cuon"><table>
           <tr><th>Câu hỏi</th><th>Đáp án</th><th>Số lần sai</th><th>Mức</th><th>Lần sai gần nhất</th><th></th></tr>
           ${ds.map(x => `<tr><td>${moTaCau(x.q)}</td><td><b>${esc(x.q.dapAn)}</b></td><td>${x.lanSai}</td>
-            <td>${x.k ? `GĐ ${x.k} ` : ""}${x.lv ? theDK(x.lv) : ""}</td><td>${ngayGio(x.ngay)}</td>
+            <td>${x.k ? (x.k === "tt" ? "Thử thách " : `GĐ ${x.k} `) : ""}${x.lv ? theDK(x.lv) : ""}</td><td>${ngayGio(x.ngay)}</td>
             <td><button class="btn btn-chu" data-hd="xoaCau" data-i="${x.i}">Xóa</button></td></tr>`).join("")}
         </table></div>` : "<p><b>Không có câu sai nào cần ôn.</b></p>"}
     </section>`;
@@ -1355,6 +1754,16 @@ function tabCaiDat(p){
         ${[[0.75, "Chậm"], [0.9, "Vừa"], [1.05, "Nhanh"]].map(([v, t]) => `<option value="${v}" ${Number(DB.caiDat.tocDo) === v ? "selected" : ""}>${t}</option>`).join("")}
       </select><button class="btn btn-nho" data-hd="docThu">Đọc thử</button></div>
       <p class="nho">Đồng hồ chỉ bắt đầu đếm sau khi đọc xong câu hỏi.</p>
+    </section>
+    <section class="khoi"><h2>Gợi ý, mẹo và trò chơi</h2>
+      <label class="chon-o"><input type="checkbox" id="caiGoiY" ${DB.caiDat.goiY ? "checked" : ""}> Hiện nút 💡 Gợi ý trong bài và mẹo khi bé trả lời sai</label>
+      <p class="nho">Câu dùng gợi ý vẫn tính đúng nhưng không được sao. Bài kiểm tra lên chặng và Góc trò chơi không có gợi ý.</p>
+      <div class="dong-cai"><label for="caiTheMeo">Thẻ mẹo trước bài</label><select id="caiTheMeo">
+        ${[["lanDau", "Chỉ lần đầu vào bài"], ["luon", "Lần nào cũng hiện"], ["khong", "Không hiện"]].map(([v, t]) => `<option value="${v}" ${DB.caiDat.theMeo === v ? "selected" : ""}>${t}</option>`).join("")}
+      </select></div>
+      <div class="dong-cai"><label for="caiGioiHan">Góc trò chơi mỗi ngày</label><select id="caiGioiHan">
+        ${[[0, "Không giới hạn"], [10, "10 phút"], [15, "15 phút"], [20, "20 phút"], [30, "30 phút"]].map(([v, t]) => `<option value="${v}" ${Number(DB.caiDat.gioiHanChoi) === v ? "selected" : ""}>${t}</option>`).join("")}
+      </select></div>
     </section>
     <section class="khoi"><h2>Trả lời bằng giọng nói</h2>
       ${LopNghe ? "" : `<p class="yeu">Trình duyệt này không hỗ trợ nhận diện giọng nói. Hãy dùng Chrome hoặc Edge.</p>`}
@@ -1393,13 +1802,61 @@ function tabCaiDat(p){
     </section>` : ""}`;
 }
 
+function cauDoiSong(p){
+  const s = CONFIG.giaiDoan[gdHienTai(p)];
+  const [a1, b1] = taoTru(s, 2), [a2, b2] = taoCong(s, 2), [a3, b3] = taoCong(s, 2), [a4, b4] = taoTru(s, 2);
+  return shuffle([
+    [`Con có ${a1} cái bánh, ăn ${b1} cái. Con còn mấy cái bánh?`, a1 - b1],
+    [`Trong giỏ có ${a2} quả cam, mẹ bỏ thêm ${b2} quả. Giỏ có tất cả mấy quả?`, a2 + b2],
+    [`Lớp có ${a3} bạn nam và ${b3} bạn nữ. Lớp có bao nhiêu bạn?`, a3 + b3],
+    [`Bố có ${a4} cái kẹo, cho con một ít thì còn ${a4 - b4} cái. Bố đã cho con mấy cái?`, b4]
+  ]).slice(0, 3);
+}
+function tabHuongDan(p){
+  const yeu = Object.entries(p.thongKeDang).filter(([d, x]) => x.tong >= 5 && x.dung / x.tong < 0.8)
+    .sort((a, b) => a[1].dung / a[1].tong - b[1].dung / b[1].tong).slice(0, 3);
+  const homNay = khoaNgay(new Date());
+  const giayHoc = p.lichSu.filter(x => khoaNgay(x.ngay) === homNay).reduce((t, x) => t + (x.giay || 0), 0);
+  return `
+    <section class="khoi"><h2>Gợi ý luyện tập cho ${esc(p.ten)}</h2>
+      ${!Object.keys(p.thongKeDang).length ? "<p>Cho bé làm vài bài để phần mềm biết bé cần luyện thêm phần nào nhé.</p>"
+        : yeu.length ? `<p>Các dạng bài bé còn hay sai:</p><ul class="huong-dan">${yeu.map(([d, x]) => `<li><b>${TEN_DANG[d] || d}</b> (đúng ${Math.round(x.dung / x.tong * 100)}%): ${LOI_KHUYEN[d] || "Cho bé làm lại bài này ở mức Dễ và dùng nút gợi ý để hiểu cách làm."}</li>`).join("")}</ul>`
+        : "<p>Bé đang làm tốt tất cả các dạng bài (đúng từ 80% trở lên). Có thể cho bé thử mức khó hơn.</p>"}
+      <h3>Câu hỏi đời sống để hỏi bé hôm nay</h3>
+      <ul class="huong-dan">${cauDoiSong(p).map(([c, d]) => `<li>${esc(c)} <span class="nho">(Đáp án: ${d})</span></li>`).join("")}</ul>
+      <button class="btn btn-nho" data-hd="doiCauDoiSong">Đổi câu khác</button>
+      <p class="nho" style="margin-top:12px">Hôm nay bé đã học ${dinhDangGio(giayHoc)} và chơi ${dinhDangGio(giayChoiHomNay(p))} ở Góc trò chơi. Mỗi ngày 10 đến 15 phút là vừa đủ.</p>
+    </section>
+    <section class="khoi"><h2>Lời khuyên cho phụ huynh</h2><ul class="huong-dan">
+      <li><b>Hiểu trước, nhanh sau.</b> Đừng ép bé học thuộc khi chưa hiểu bản chất: cộng là gộp, trừ là bớt.</li>
+      <li><b>Luyện ngắn, đều đặn.</b> Mỗi ngày 10 đến 15 phút hiệu quả hơn học dồn.</li>
+      <li><b>Học qua đời sống.</b> Ví dụ: "Con có 5 cái bánh, ăn 2 cái, còn mấy cái?"</li>
+      <li><b>Khen quá trình, không chỉ kết quả.</b> Bé sẽ thấy toán học vui và tự tin hơn.</li>
+      <li><b>Tiến từng bước:</b> phạm vi 10, rồi phạm vi 20, rồi mới tới các phép tính lớn hơn.</li>
+    </ul></section>
+    <section class="khoi"><h2>Dụng cụ và trò chơi tại nhà</h2><ul class="huong-dan">
+      <li><b>Ngón tay, que tính, hạt đậu, kẹo:</b> trực quan, phù hợp giai đoạn đầu.</li>
+      <li><b>Tia số:</b> vẽ số từ 0 đến 20 trên giấy, bé nhảy tới (cộng) hoặc nhảy lùi (trừ).</li>
+      <li><b>Xúc xắc hoặc bài số:</b> lật 2 lá bài rồi cộng nhanh.</li>
+      <li><b>Trò chớp số:</b> phụ huynh đưa phép tính, bé trả lời trong 5 giây.</li>
+      <li><b>Bài hát, thơ về bảng cộng:</b> giúp nhớ lâu mà không bị áp lực.</li>
+    </ul><p class="nho">Trong phần mềm, Góc trò chơi đã có sẵn Chớp số, Bạn của 10, Lật bài và Ếch nhảy tia số.</p></section>
+    <section class="khoi"><h2>Các mẹo phần mềm đang dạy bé</h2><ul class="huong-dan">
+      <li><b>Bạn của 10:</b> 1 + 9, 2 + 8, 3 + 7, 4 + 6, 5 + 5. Từ giai đoạn 2 mở rộng thành ghép tròn chục: 13 + 7 = 20.</li>
+      <li><b>Mẹo cộng:</b> đếm tiếp từ số lớn, đổi chỗ hai số, cộng 0 giữ nguyên, cộng 1 là số liền sau, gấp đôi và gần gấp đôi (4 + 5 = 4 + 4 + 1).</li>
+      <li><b>Mẹo trừ:</b> nghĩ ngược bằng phép cộng, đếm lùi với số nhỏ, trừ 0 giữ nguyên, trừ 1 là số liền trước.</li>
+      <li><b>Gia đình số:</b> 3, 6, 9 có 4 phép tính: 3 + 6 = 9, 6 + 3 = 9, 9 − 3 = 6, 9 − 6 = 3.</li>
+      <li><b>Qua 10 (chặng thử thách, tùy chọn):</b> 8 + 5 = 8 + 2 + 3 = 13; 14 − 6 = 14 − 4 − 2 = 8.</li>
+    </ul></section>`;
+}
+
 function manPhuHuynh(){
   roiQuiz(); manHT = "phuhuynh";
   const p = hoSo(), ds = Object.values(DB.hoSo);
-  const tabs = [["thanhTich", "Thành tích"], ["lichSu", "Lịch sử làm bài"], ["cauSai", "Câu trả lời sai"], ["caiDat", "Cài đặt"]];
+  const tabs = [["thanhTich", "Thành tích"], ["lichSu", "Lịch sử làm bài"], ["cauSai", "Câu trả lời sai"], ["huongDan", "Hướng dẫn"], ["caiDat", "Cài đặt"]];
   const noiDung = (!p && PH.tab !== "caiDat")
     ? `<section class="khoi"><p>Chưa chọn bé nào. Hãy thêm hoặc chọn bé ở trang chính.</p></section>`
-    : { thanhTich: tabThanhTich, lichSu: tabLichSu, cauSai: tabCauSai, caiDat: tabCaiDat }[PH.tab](p);
+    : { thanhTich: tabThanhTich, lichSu: tabLichSu, cauSai: tabCauSai, huongDan: tabHuongDan, caiDat: tabCaiDat }[PH.tab](p);
   app.innerHTML = `
     <div class="topbar"><button class="btn btn-nho" data-hd="${p ? "veMap" : "veHome"}">← Quay lại</button>
       ${ds.length > 1 ? `<label class="nho">Xem bé <select id="phHoSo">${ds.map(x => `<option value="${x.id}" ${p && x.id === p.id ? "selected" : ""}>${esc(x.ten)}</option>`).join("")}</select></label>`
@@ -1472,7 +1929,7 @@ function themHoSo(){
   const o = document.getElementById("tenMoi"), ten = o.value.trim();
   if (!ten){ toast("Nhập tên của bé trước nhé."); o.focus(); return; }
   const id = "hs" + Date.now();
-  DB.hoSo[id] = chuanHoa({ id, ten, taoLuc: new Date().toISOString(), huyHieu: [] });
+  DB.hoSo[id] = chuanHoa({ id, ten, taoLuc: new Date().toISOString(), huyHieu: [], phienBanBai: 2 });
   DB.dangChon = id; luu(); manMap();
 }
 
@@ -1486,9 +1943,17 @@ app.addEventListener("click", e => {
     case "veHome":   manHome(); break;
     case "veMap":    manMap(); break;
     case "vePH":     manPhuHuynh(); break;
-    case "moGD":     manBai(Number(b.dataset.k)); break;
+    case "moGD":     manBai(docK(b.dataset.k)); break;
     case "chonDoKho": p.doKho = Number(b.dataset.lv); luu(); manBai(K); break;
-    case "lamBai":   batDau(K, Number(b.dataset.n)); break;
+    case "lamBai":   moBaiHoc(K, Number(b.dataset.n)); break;
+    case "batDauBai": batDau(K, Number(b.dataset.n)); break;
+    case "docMeo":   noi(noiDungMeo(K, Number(b.dataset.n)).y.join(". ")); break;
+    case "docMeoBai": manTheMeo(K, Number(b.dataset.n)); break;
+    case "xemMeo":   manDsMeo(K); break;
+    case "goiY":     hienGoiY(); break;
+    case "troChoi":  manTroChoi(); break;
+    case "choi":     batDauChoi(b.dataset.id); break;
+    case "doiCauDoiSong": manPhuHuynh(); break;
     case "thuKhoHon": p.doKho = Number(b.dataset.lv); luu(); batDau(K, Number(b.dataset.n)); break;
     case "lamKT":    batDau(K, 0); break;
     case "onCauSai":   batDauOn(cauTuNganHang(p), false); break;
@@ -1503,7 +1968,8 @@ app.addEventListener("click", e => {
     case "thoatQuiz":
       if (confirm("Dừng bài này? Kết quả bài đang làm sẽ không được lưu.")){
         const q = Q; roiQuiz();
-        if (q.loai === "on") q.tuPhuHuynh ? manPhuHuynh() : manMap(); else manBai(q.k);
+        if (q.loai === "choi"){ themGioChoi(hoSo(), Math.round((Date.now() - q.batDau) / 1000)); luu(); manTroChoi(); }
+        else if (q.loai === "on") q.tuPhuHuynh ? manPhuHuynh() : manMap(); else manBai(q.k);
       }
       break;
     case "phuHuynh": vaoPhuHuynh(); break;
@@ -1551,6 +2017,9 @@ app.addEventListener("change", e => {
   if (id === "caiTocDo"){ DB.caiDat.tocDo = parseFloat(e.target.value); luu(); }
   if (id === "caiTraLoiGiong"){ DB.caiDat.traLoiGiong = e.target.checked; luu(); }
   if (id === "caiNgheTuDong"){ DB.caiDat.ngheTuDong = e.target.checked; luu(); }
+  if (id === "caiGoiY"){ DB.caiDat.goiY = e.target.checked; luu(); }
+  if (id === "caiTheMeo"){ DB.caiDat.theMeo = e.target.value; luu(); }
+  if (id === "caiGioiHan"){ DB.caiDat.gioiHanChoi = Number(e.target.value); luu(); }
   if (id === "caiMoKhoa" && p){ p.moKhoaTatCa = e.target.checked; luu(); toast(p.moKhoaTatCa ? "Đã mở khóa tất cả." : "Đã khóa lại theo tiến độ."); }
   if (id === "caiDoKhoKT" && p){ p.doKhoKiemTra = Number(e.target.value); luu(); }
   if (id === "phHoSo"){ DB.dangChon = e.target.value; luu(); PH.soDong = 30; manPhuHuynh(); }
